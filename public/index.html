@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover UAE's best professional events, conferences, and networking opportunities. All emirates, all industries.">
+    <meta name="theme-color" content="#00875A">
+    <title>UAE Professional Events | Business Networking & Conferences</title>
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="stylesheet" href="/css/desktop.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>UAE Pro Events</h1>
+                    <p class="tagline">Your Professional Events Curator</p>
+                </div>
+                <button id="login-btn" class="btn-login">Login</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filters Section (Sticky) -->
+    <section class="filters-section" id="filters">
+        <div class="container">
+            <div class="filter-chips">
+
+                <!-- Month Filter -->
+                <select id="filter-month" class="filter-chip" aria-label="Filter by month">
+                    <option value="">All Months</option>
+                    <!-- Populated by JavaScript -->
+                </select>
+
+                <!-- Industry Filter -->
+                <select id="filter-industry" class="filter-chip" aria-label="Filter by industry">
+                    <option value="">All Industries</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Tech">Technology</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Real Estate">Real Estate</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Legal">Legal</option>
+                    <option value="HR">Human Resources</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Government">Government</option>
+                </select>
+
+                <!-- City Filter -->
+                <select id="filter-city" class="filter-chip" aria-label="Filter by city">
+                    <option value="">All UAE</option>
+                    <option value="Dubai">Dubai</option>
+                    <option value="Abu Dhabi">Abu Dhabi</option>
+                    <option value="Sharjah">Sharjah</option>
+                    <option value="Ajman">Ajman</option>
+                    <option value="RAK">Ras Al Khaimah</option>
+                    <option value="Fujairah">Fujairah</option>
+                    <option value="UAQ">Umm Al Quwain</option>
+                </select>
+
+                <!-- Clear Filters -->
+                <button id="clear-filters" class="btn-text">Clear All</button>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Events Container -->
+    <main class="events-container">
+        <div class="container">
+
+            <!-- Loading State -->
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading professional events...</p>
+            </div>
+
+            <!-- Events Grid -->
+            <div id="events-grid" class="events-grid">
+                <!-- Event cards populated by JavaScript -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <div class="empty-icon">📅</div>
+                <h3>No events found</h3>
+                <p>Try adjusting your filters or check back later for new events.</p>
+                <button id="reset-filters" class="btn-primary">Show All Events</button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer CTA -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 UAE Professional Events. All rights reserved.</p>
+                <p class="footer-note">Curated weekly for UAE business professionals</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Event Detail Modal (Single Reusable Modal) -->
+    <div class="event-modal" id="event-modal">
+        <div class="modal-overlay" onclick="closeEventModal()"></div>
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeEventModal()" aria-label="Close modal">&times;</button>
+            <div class="modal-body" id="modal-body">
+                <!-- Event details injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="login-modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeLoginModal()"></div>
+        <div class="modal-sheet modal-small" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeLoginModal()" aria-label="Close">&times;</button>
+
+            <div class="modal-body">
+                <h2>Quick Login (Optional)</h2>
+                <p class="modal-subtitle">Save events and get personalized recommendations</p>
+
+                <form id="login-form">
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Your email address"
+                        required
+                        class="input-field"
+                        aria-label="Email address"
+                    >
+
+                    <input
+                        type="text"
+                        name="first_name"
+                        placeholder="First name (optional)"
+                        class="input-field"
+                        aria-label="First name"
+                    >
+
+                    <button type="submit" class="btn-primary btn-full">Continue to Event</button>
+
+                    <button type="button" id="skip-login" class="btn-text btn-full">
+                        Skip - Continue Browsing →
+                    </button>
+                </form>
+
+                <p id="login-message" class="message"></p>
+
+                <p class="privacy-note">
+                    We'll save your preferences. No spam, unsubscribe anytime.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/eventCards.js"></script>
+    <script src="/js/filters.js"></script>
+    <script src="/js/modal.js"></script>
+    <script src="/js/login.js"></script>
+    <script src="/js/app.js"></script>
+
+</body>
+</html>

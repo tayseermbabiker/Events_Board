@@ -1,0 +1,90 @@
+/* Desktop & Tablet Breakpoints */
+
+/* Tablet (768px and up) */
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+    padding: 0 var(--space-lg);
+  }
+
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
+
+  /* Modal: Center instead of bottom-sheet */
+  .modal-sheet {
+    position: relative;
+    bottom: auto;
+    max-width: 700px;
+    margin: 5vh auto;
+    border-radius: var(--radius-xl);
+    max-height: 90vh;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .modal-small {
+    max-width: 500px;
+  }
+
+  /* Filters: Better spacing */
+  .filter-chips {
+    gap: var(--space-md);
+  }
+}
+
+/* Desktop (1024px and up) */
+@media (min-width: 1024px) {
+  .container {
+    max-width: var(--container-max);
+  }
+
+  .events-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Hover effects for desktop */
+  .event-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #00a570 0%, #00c97d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 135, 90, 0.35);
+  }
+
+  .filter-chip:hover {
+    border-color: var(--uae-green);
+  }
+
+  .btn-login:hover {
+    background: #006644;
+  }
+
+  .btn-text:hover {
+    color: #006644;
+  }
+
+  /* Modal larger on desktop */
+  .modal-sheet {
+    max-width: 800px;
+  }
+
+  .modal-small {
+    max-width: 500px;
+  }
+}
+
+/* Large Desktop (1440px and up) */
+@media (min-width: 1440px) {
+  .events-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "uae-events-webapp",
+  "version": "1.0.0",
+  "description": "UAE Professional Events Platform - Event discovery board with optional login and affiliate revenue",
+  "main": "index.js",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required - static site'",
+    "deploy": "netlify deploy --prod"
+  },
+  "keywords": [
+    "events",
+    "uae",
+    "dubai",
+    "abu-dhabi",
+    "professional-events",
+    "networking"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "airtable": "^0.12.2"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
