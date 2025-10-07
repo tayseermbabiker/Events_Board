@@ -50,26 +50,31 @@
 
   /* Hover effects for desktop */
   .event-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0, 212, 126, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 
   .btn-primary:hover {
-    background: linear-gradient(135deg, #00a570 0%, #00c97d 100%);
+    background: linear-gradient(135deg, #00FF94 0%, #00D47E 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 135, 90, 0.35);
+    box-shadow: 0 8px 25px rgba(0, 212, 126, 0.4);
   }
 
   .filter-chip:hover {
     border-color: var(--uae-green);
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 212, 126, 0.15);
+    transform: translateY(-2px);
   }
 
   .btn-login:hover {
-    background: #006644;
+    background: linear-gradient(135deg, #00FF94 0%, #00D47E 100%);
+    box-shadow: 0 6px 20px rgba(0, 212, 126, 0.4);
+    transform: translateY(-2px);
   }
 
   .btn-text:hover {
-    color: #006644;
+    color: var(--uae-green);
   }
 
   /* Modal larger on desktop */

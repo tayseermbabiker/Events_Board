@@ -1,18 +1,21 @@
-/* Design Tokens & Theme Variables */
+/* Design Tokens & Theme Variables - Vibrant Modern Tech */
 :root {
   /* Primary Colors - UAE Professional Theme */
-  --navy-dark: #142952;
-  --navy-medium: #1E2A38;
+  --navy-dark: #0A1628;
+  --navy-medium: #1a2332;
 
-  /* Accent Colors */
-  --gold: #FFD700;
-  --uae-green: #00875A;
+  /* Vibrant Accent Colors */
+  --gold: #FFB800;
+  --uae-green: #00D47E;
+  --electric-blue: #0EA5E9;
+  --purple-glow: #A855F7;
+  --pink-accent: #EC4899;
 
   /* Neutral Colors */
   --beige: #EFE6DE;
-  --grey-light: #F7F7F7;
-  --grey-medium: #E0E0E0;
-  --grey-dark: #4A4A4A;
+  --grey-light: #F8FAFC;
+  --grey-medium: #E2E8F0;
+  --grey-dark: #475569;
   --white: #FFFFFF;
 
   /* Semantic Colors */
