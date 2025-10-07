@@ -1,15 +1,16 @@
-/* Design Tokens & Theme Variables - Vibrant Modern Tech */
+/* Design Tokens & Theme Variables - Purple & Blue Modern */
 :root {
-  /* Primary Colors - UAE Professional Theme */
-  --navy-dark: #0A1628;
-  --navy-medium: #1a2332;
+  /* Primary Colors - Purple & Blue Theme */
+  --navy-dark: #0f0a1e;
+  --navy-medium: #1a1530;
 
   /* Vibrant Accent Colors */
-  --gold: #FFB800;
-  --uae-green: #00D47E;
+  --primary-purple: #8B5CF6;
+  --primary-blue: #3B82F6;
   --electric-blue: #0EA5E9;
   --purple-glow: #A855F7;
-  --pink-accent: #EC4899;
+  --deep-purple: #7C3AED;
+  --gold: #FFB800;
 
   /* Neutral Colors */
   --beige: #EFE6DE;

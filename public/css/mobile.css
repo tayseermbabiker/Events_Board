@@ -16,16 +16,16 @@ body {
 
 /* ===== HEADER ===== */
 .header {
-  background: linear-gradient(135deg, #0A1628 0%, #1a2332 50%, #0A1628 100%);
+  background: linear-gradient(135deg, #0f0a1e 0%, #1a1530 25%, #1e1b4b 50%, #1a1530 75%, #0f0a1e 100%);
   background-size: 200% 200%;
-  animation: gradientShift 8s ease infinite;
+  animation: gradientShift 10s ease infinite;
   color: var(--white);
   padding: var(--space-lg) 0;
-  box-shadow: 0 4px 20px rgba(0, 212, 126, 0.15), 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2), 0 2px 8px rgba(59, 130, 246, 0.15);
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(0, 212, 126, 0.2);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 @keyframes gradientShift {
@@ -45,11 +45,11 @@ body {
   font-weight: 700;
   margin: 0;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #00D47E 0%, #0EA5E9 100%);
+  background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #0EA5E9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 0 30px rgba(0, 212, 126, 0.3);
+  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.4));
 }
 
 .tagline {
@@ -61,7 +61,7 @@ body {
 }
 
 .btn-login {
-  background: linear-gradient(135deg, #00D47E 0%, #00a563 100%);
+  background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
   color: var(--white);
   padding: var(--space-sm) var(--space-lg);
   border-radius: var(--radius-md);
@@ -69,14 +69,14 @@ body {
   font-weight: 600;
   min-height: var(--touch-target);
   transition: all var(--transition-base);
-  box-shadow: 0 4px 15px rgba(0, 212, 126, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-login:active {
-  background: linear-gradient(135deg, #00a563 0%, #00875A 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%);
   transform: scale(0.95);
-  box-shadow: 0 2px 8px rgba(0, 212, 126, 0.4);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.5);
 }
 
 /* ===== FILTERS SECTION ===== */
@@ -84,11 +84,11 @@ body {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   padding: var(--space-md) 0;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 15px rgba(139, 92, 246, 0.08);
   position: sticky;
   top: 88px; /* Below header */
   z-index: 99;
-  border-bottom: 1px solid rgba(0, 212, 126, 0.1);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .filter-chips {
@@ -107,7 +107,7 @@ body {
 .filter-chip {
   padding: var(--space-sm) var(--space-md);
   background: rgba(248, 250, 252, 0.8);
-  border: 2px solid rgba(0, 212, 126, 0.2);
+  border: 2px solid rgba(139, 92, 246, 0.25);
   border-radius: var(--radius-lg);
   font-size: var(--font-base);
   color: var(--text-primary);
@@ -120,8 +120,8 @@ body {
 }
 
 .filter-chip:focus {
-  border-color: var(--uae-green);
-  box-shadow: 0 0 0 3px rgba(0, 212, 126, 0.15), 0 4px 12px rgba(0, 212, 126, 0.2);
+  border-color: #8B5CF6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 4px 12px rgba(139, 92, 246, 0.25);
   background: rgba(255, 255, 255, 1);
 }
 
@@ -153,15 +153,15 @@ body {
   gap: var(--space-md);
 }
 
-/* ===== EVENT CARD (Vibrant Modern Style) ===== */
+/* ===== EVENT CARD (Purple & Blue Style) ===== */
 .event-card {
   background: var(--white);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 212, 126, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(139, 92, 246, 0.08);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(0, 212, 126, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.15);
   position: relative;
 }
 
@@ -172,7 +172,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #00D47E 0%, #0EA5E9 50%, #A855F7 100%);
+  background: linear-gradient(90deg, #8B5CF6 0%, #3B82F6 50%, #0EA5E9 100%);
   opacity: 0;
   transition: opacity var(--transition-base);
 }
@@ -183,7 +183,7 @@ body {
 
 .event-card:active {
   transform: scale(0.97);
-  box-shadow: 0 2px 12px rgba(0, 212, 126, 0.2);
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.25);
 }
 
 .event-card-image-wrapper {
@@ -289,7 +289,7 @@ body {
 
 /* Buttons */
 .btn-primary {
-  background: linear-gradient(135deg, #00D47E 0%, #00a570 100%);
+  background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
   color: var(--white);
   border: none;
   padding: var(--space-sm) var(--space-lg);
@@ -302,7 +302,7 @@ body {
   text-align: center;
   display: inline-block;
   width: 100%;
-  box-shadow: 0 4px 15px rgba(0, 212, 126, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
   position: relative;
   overflow: hidden;
 }
@@ -326,9 +326,9 @@ body {
 }
 
 .btn-primary:active {
-  background: linear-gradient(135deg, #00a570 0%, #00875A 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%);
   transform: translateY(1px);
-  box-shadow: 0 2px 8px rgba(0, 212, 126, 0.4);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.45);
 }
 
 .btn-full {
