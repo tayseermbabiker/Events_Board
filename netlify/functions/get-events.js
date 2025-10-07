@@ -27,7 +27,7 @@ exports.handler = async (event, context) => {
     const city = params.city;
 
     // Build Airtable filter formula
-    let filterFormula = 'AND({status} = "approved"';
+    let filterFormula = 'AND({status} = "approved", IS_AFTER({start_date}, NOW())';
 
     // Filter by month
     if (month) {
