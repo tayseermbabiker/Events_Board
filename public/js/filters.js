@@ -4,6 +4,7 @@ let allEvents = []; // Store all events for client-side filtering
 let activeFilters = {
   month: '',
   industry: '',
+  cost: '',
   city: ''
 };
 
@@ -34,6 +35,15 @@ function initializeFilters() {
   if (industryFilter) {
     industryFilter.addEventListener('change', (e) => {
       activeFilters.industry = e.target.value;
+      applyFilters();
+    });
+  }
+
+  // Cost filter
+  const costFilter = document.getElementById('filter-cost');
+  if (costFilter) {
+    costFilter.addEventListener('change', (e) => {
+      activeFilters.cost = e.target.value;
       applyFilters();
     });
   }
@@ -75,6 +85,18 @@ function applyFilters() {
     );
   }
 
+  // Filter by cost
+  if (activeFilters.cost) {
+    filteredEvents = filteredEvents.filter(event => {
+      if (activeFilters.cost === 'free') {
+        return event.is_free === true;
+      } else if (activeFilters.cost === 'paid') {
+        return event.is_free === false;
+      }
+      return true;
+    });
+  }
+
   // Filter by city
   if (activeFilters.city) {
     filteredEvents = filteredEvents.filter(event =>
@@ -96,16 +118,19 @@ function clearFilters() {
   activeFilters = {
     month: '',
     industry: '',
+    cost: '',
     city: ''
   };
 
   // Reset all filter dropdowns
   const monthFilter = document.getElementById('filter-month');
   const industryFilter = document.getElementById('filter-industry');
+  const costFilter = document.getElementById('filter-cost');
   const cityFilter = document.getElementById('filter-city');
 
   if (monthFilter) monthFilter.value = '';
   if (industryFilter) industryFilter.value = '';
+  if (costFilter) costFilter.value = '';
   if (cityFilter) cityFilter.value = '';
 
   // Show all events
@@ -122,7 +147,7 @@ function updateClearButtonVisibility() {
   const clearBtn = document.getElementById('clear-filters-btn');
   if (!clearBtn) return;
 
-  const hasActiveFilters = activeFilters.month || activeFilters.industry || activeFilters.city;
+  const hasActiveFilters = activeFilters.month || activeFilters.industry || activeFilters.cost || activeFilters.city;
   clearBtn.style.display = hasActiveFilters ? 'inline-block' : 'none';
 }
 
@@ -198,6 +223,7 @@ function getFilterQueryString() {
 
   if (activeFilters.month) params.append('month', activeFilters.month);
   if (activeFilters.industry) params.append('industry', activeFilters.industry);
+  if (activeFilters.cost) params.append('cost', activeFilters.cost);
   if (activeFilters.city) params.append('city', activeFilters.city);
 
   return params.toString();

@@ -24,6 +24,7 @@ exports.handler = async (event, context) => {
     const params = event.queryStringParameters || {};
     const month = params.month; // Format: YYYY-MM
     const industry = params.industry;
+    const cost = params.cost; // 'free' or 'paid'
     const city = params.city;
 
     // Build Airtable filter formula
@@ -38,6 +39,15 @@ exports.handler = async (event, context) => {
     // Filter by industry
     if (industry) {
       filterFormula += `, {industry} = "${industry}"`;
+    }
+
+    // Filter by cost
+    if (cost) {
+      if (cost === 'free') {
+        filterFormula += `, {is_free} = TRUE()`;
+      } else if (cost === 'paid') {
+        filterFormula += `, {is_free} = FALSE()`;
+      }
     }
 
     // Filter by city
