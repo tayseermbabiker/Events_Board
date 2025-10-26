@@ -409,7 +409,8 @@ body {
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   max-height: 90vh;
   overflow-y: auto;
-  animation: slideUp 0.3s ease-out forwards;
+  transform: translateY(0);
+  animation: slideUp 0.3s ease-out;
   z-index: 2;
 }
 
