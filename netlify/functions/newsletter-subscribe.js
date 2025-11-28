@@ -3,10 +3,24 @@ const BEEHIIV_API_KEY = process.env.BEEHIIV_API_KEY;
 const BEEHIIV_PUBLICATION_ID = 'pub_e6b11bde-2ab7-4bb3-a7b2-2f9a9464a37e';
 
 exports.handler = async (event) => {
+    // CORS headers
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Content-Type': 'application/json'
+    };
+
+    // Handle OPTIONS request for CORS
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers, body: '' };
+    }
+
     // Only allow POST
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
+            headers,
             body: JSON.stringify({ error: 'Method not allowed' })
         };
     }
@@ -17,6 +31,7 @@ exports.handler = async (event) => {
         if (!email) {
             return {
                 statusCode: 400,
+                headers,
                 body: JSON.stringify({ error: 'Email is required' })
             };
         }
@@ -57,6 +72,7 @@ exports.handler = async (event) => {
         if (response.ok) {
             return {
                 statusCode: 200,
+                headers,
                 body: JSON.stringify({
                     success: true,
                     message: 'Successfully subscribed!'
@@ -69,6 +85,7 @@ exports.handler = async (event) => {
             if (data.errors && data.errors.some(e => e.includes('already'))) {
                 return {
                     statusCode: 200,
+                    headers,
                     body: JSON.stringify({
                         success: true,
                         message: 'You\'re already subscribed!'
@@ -78,6 +95,7 @@ exports.handler = async (event) => {
 
             return {
                 statusCode: 400,
+                headers,
                 body: JSON.stringify({
                     error: data.errors?.[0] || 'Subscription failed'
                 })
@@ -88,6 +106,7 @@ exports.handler = async (event) => {
         console.error('Newsletter subscribe error:', error);
         return {
             statusCode: 500,
+            headers,
             body: JSON.stringify({ error: 'Server error. Please try again.' })
         };
     }

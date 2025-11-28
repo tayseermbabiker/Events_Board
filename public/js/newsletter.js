@@ -1,17 +1,30 @@
 // Newsletter Signup Handler - Beehiiv Integration
 
 (function() {
+    console.log('Newsletter JS loaded');
+
     const form = document.getElementById('newsletter-form');
     const emailInput = document.getElementById('newsletter-email');
     const messageEl = document.getElementById('newsletter-message');
 
-    if (!form) return;
+    if (!form) {
+        console.log('Newsletter form not found');
+        return;
+    }
+
+    console.log('Newsletter form found, attaching handler');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        e.stopPropagation();
+
+        console.log('Newsletter form submitted');
 
         const email = emailInput.value.trim();
-        if (!email) return;
+        if (!email) {
+            console.log('No email entered');
+            return;
+        }
 
         // Disable button while submitting
         const btn = form.querySelector('.newsletter-btn');
@@ -24,7 +37,9 @@
             const interestCheckboxes = form.querySelectorAll('input[name="interests"]:checked');
             const interests = Array.from(interestCheckboxes).map(cb => cb.value);
 
-            // Subscribe via Beehiiv
+            console.log('Sending to newsletter-subscribe:', { email, interests });
+
+            // Subscribe via Beehiiv - IMPORTANT: Use correct endpoint
             const response = await fetch('/.netlify/functions/newsletter-subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -34,7 +49,9 @@
                 })
             });
 
+            console.log('Response status:', response.status);
             const data = await response.json();
+            console.log('Response data:', data);
 
             if (response.ok && data.success) {
                 showMessage('success', data.message || "You're in! Check your inbox.");

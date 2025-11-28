@@ -260,22 +260,25 @@
                 <h2>Quick Login (Optional)</h2>
                 <p class="modal-subtitle">Save events and get personalized recommendations</p>
 
-                <form id="login-form">
+                <form id="login-form" onsubmit="handleLoginSubmit(event)">
+                    <input
+                        type="text"
+                        id="login-name"
+                        name="first_name"
+                        placeholder="Your name"
+                        required
+                        class="input-field"
+                        aria-label="Your name"
+                    >
+
                     <input
                         type="email"
+                        id="login-email"
                         name="email"
                         placeholder="Your email address"
                         required
                         class="input-field"
                         aria-label="Email address"
-                    >
-
-                    <input
-                        type="text"
-                        name="first_name"
-                        placeholder="First name (optional)"
-                        class="input-field"
-                        aria-label="First name"
                     >
 
                     <button type="submit" class="btn-primary btn-full">Continue to Event</button>
