@@ -12,6 +12,19 @@
     gap: var(--space-lg);
   }
 
+  /* Newsletter: Side by side */
+  .newsletter-input-group {
+    flex-direction: row;
+  }
+
+  .newsletter-input {
+    flex: 1;
+  }
+
+  .newsletter-btn {
+    flex-shrink: 0;
+  }
+
   /* Modal: Center instead of bottom-sheet */
   .modal-sheet {
     position: absolute;
