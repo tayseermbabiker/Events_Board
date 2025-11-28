@@ -20,11 +20,18 @@
         btn.disabled = true;
 
         try {
+            // Get selected interests
+            const interestCheckboxes = form.querySelectorAll('input[name="interests"]:checked');
+            const interests = Array.from(interestCheckboxes).map(cb => cb.value);
+
             // Subscribe via Beehiiv
             const response = await fetch('/.netlify/functions/newsletter-subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email })
+                body: JSON.stringify({
+                    email: email,
+                    interests: interests
+                })
             });
 
             const data = await response.json();

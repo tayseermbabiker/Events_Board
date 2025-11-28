@@ -12,13 +12,23 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { email } = JSON.parse(event.body);
+        const { email, interests = [] } = JSON.parse(event.body);
 
         if (!email) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({ error: 'Email is required' })
             };
+        }
+
+        // Map interests to Beehiiv custom fields
+        // Beehiiv uses custom_fields for subscriber data
+        const customFields = [];
+        if (interests.length > 0) {
+            customFields.push({
+                name: 'interests',
+                value: interests.join(', ')
+            });
         }
 
         // Subscribe to Beehiiv
@@ -36,7 +46,8 @@ exports.handler = async (event) => {
                     send_welcome_email: true,
                     utm_source: 'website',
                     utm_medium: 'organic',
-                    utm_campaign: 'newsletter_signup'
+                    utm_campaign: 'newsletter_signup',
+                    custom_fields: customFields
                 })
             }
         );
