@@ -1,5 +1,4 @@
-// Newsletter Signup Handler
-// Saves email to Airtable for now. Connect to Beehiiv later.
+// Newsletter Signup Handler - Beehiiv Integration
 
 (function() {
     const form = document.getElementById('newsletter-form');
@@ -21,27 +20,23 @@
         btn.disabled = true;
 
         try {
-            // Save to Airtable via existing quick-login function
-            // This stores the email in your Users table
-            const response = await fetch('/.netlify/functions/quick-login', {
+            // Subscribe via Beehiiv
+            const response = await fetch('/.netlify/functions/newsletter-subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: email,
-                    source: 'newsletter_signup',
-                    subscription_status: 'subscribed'
-                })
+                body: JSON.stringify({ email: email })
             });
 
-            if (response.ok) {
-                showMessage('success', "You're in! Check your inbox for confirmation.");
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                showMessage('success', data.message || "You're in! Check your inbox.");
                 emailInput.value = '';
 
                 // Store in localStorage to remember they subscribed
                 localStorage.setItem('newsletter_subscribed', 'true');
                 localStorage.setItem('newsletter_email', email);
             } else {
-                const data = await response.json();
                 showMessage('error', data.error || 'Something went wrong. Please try again.');
             }
         } catch (error) {
