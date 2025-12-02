@@ -12,6 +12,12 @@
     gap: var(--space-lg);
   }
 
+  /* Newsletter interests: 3 columns on tablet */
+  .newsletter-interests {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 500px;
+  }
+
   /* Newsletter: Side by side */
   .newsletter-input-group {
     flex-direction: row;
