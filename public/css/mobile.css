@@ -601,9 +601,6 @@ body {
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-sm);
   margin-bottom: var(--space-lg);
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .interest-chip {
