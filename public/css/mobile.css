@@ -98,6 +98,8 @@ body {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding-bottom: var(--space-sm);
+  padding-right: var(--space-md);
+  margin-right: calc(-1 * var(--space-md));
 }
 
 .filter-chips::-webkit-scrollbar {
