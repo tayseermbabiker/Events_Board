@@ -1,18 +1,18 @@
-// Filters Logic (Month, Industry, City)
+// Filters Logic (Month, Industry, City) - Multi-select support
 
-let allEvents = []; // Store all events for client-side filtering
+let allEvents = [];
 let activeFilters = {
   month: '',
-  industry: '',
+  industries: [],
   cost: '',
-  city: ''
+  cities: []
 };
 
 /**
- * Initialize filter dropdowns
+ * Initialize filters
  */
 function initializeFilters() {
-  // Populate month filter with next 6 months
+  // Month filter (single select)
   const monthFilter = document.getElementById('filter-month');
   if (monthFilter) {
     const months = getNext6Months();
@@ -23,23 +23,13 @@ function initializeFilters() {
       monthFilter.appendChild(option);
     });
 
-    // Add event listener
     monthFilter.addEventListener('change', (e) => {
       activeFilters.month = e.target.value;
       applyFilters();
     });
   }
 
-  // Industry filter
-  const industryFilter = document.getElementById('filter-industry');
-  if (industryFilter) {
-    industryFilter.addEventListener('change', (e) => {
-      activeFilters.industry = e.target.value;
-      applyFilters();
-    });
-  }
-
-  // Cost filter
+  // Cost filter (single select)
   const costFilter = document.getElementById('filter-cost');
   if (costFilter) {
     costFilter.addEventListener('change', (e) => {
@@ -48,188 +38,157 @@ function initializeFilters() {
     });
   }
 
-  // City filter
-  const cityFilter = document.getElementById('filter-city');
-  if (cityFilter) {
-    cityFilter.addEventListener('change', (e) => {
-      activeFilters.city = e.target.value;
-      applyFilters();
-    });
-  }
+  // Industry multi-select
+  setupMultiSelect('industry', 'industries', 'All Industries');
 
-  // Clear filters button
-  const clearBtn = document.getElementById('clear-filters-btn');
+  // City multi-select
+  setupMultiSelect('city', 'cities', 'All Emirates');
+
+  // Clear filters
+  const clearBtn = document.getElementById('clear-filters');
   if (clearBtn) {
     clearBtn.addEventListener('click', clearFilters);
   }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.multi-select')) {
+      document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
+    }
+  });
 }
 
 /**
- * Apply active filters to event list
+ * Setup multi-select dropdown
+ */
+function setupMultiSelect(name, filterKey, defaultLabel) {
+  const btn = document.getElementById(`${name}-btn`);
+  const dropdown = document.getElementById(`${name}-dropdown`);
+
+  if (!btn || !dropdown) return;
+
+  // Toggle dropdown
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // Close other dropdowns
+    document.querySelectorAll('.multi-select-dropdown').forEach(d => {
+      if (d !== dropdown) d.classList.remove('open');
+    });
+    dropdown.classList.toggle('open');
+  });
+
+  // Handle checkbox changes
+  dropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const checked = dropdown.querySelectorAll('input:checked');
+      const values = Array.from(checked).map(c => c.value);
+      activeFilters[filterKey] = values;
+
+      // Update button text
+      if (values.length === 0) {
+        btn.textContent = defaultLabel + ' ▾';
+      } else if (values.length === 1) {
+        btn.textContent = values[0] + ' ▾';
+      } else {
+        btn.textContent = values.length + ' selected ▾';
+      }
+
+      applyFilters();
+    });
+  });
+}
+
+/**
+ * Apply filters
  */
 function applyFilters() {
-  let filteredEvents = [...allEvents];
+  let filtered = [...allEvents];
 
-  // Filter by month (YYYY-MM format)
+  // Month
   if (activeFilters.month) {
-    filteredEvents = filteredEvents.filter(event => {
-      const eventMonth = event.start_date.substring(0, 7); // Extract YYYY-MM
-      return eventMonth === activeFilters.month;
-    });
+    filtered = filtered.filter(e => e.start_date.substring(0, 7) === activeFilters.month);
   }
 
-  // Filter by industry
-  if (activeFilters.industry) {
-    filteredEvents = filteredEvents.filter(event =>
-      event.industry === activeFilters.industry
-    );
+  // Industries (multi)
+  if (activeFilters.industries.length > 0) {
+    filtered = filtered.filter(e => activeFilters.industries.includes(e.industry));
   }
 
-  // Filter by cost
+  // Cost
   if (activeFilters.cost) {
-    filteredEvents = filteredEvents.filter(event => {
-      if (activeFilters.cost === 'free') {
-        return event.is_free === true;
-      } else if (activeFilters.cost === 'paid') {
-        return event.is_free === false;
-      }
+    filtered = filtered.filter(e => {
+      if (activeFilters.cost === 'free') return e.is_free === true;
+      if (activeFilters.cost === 'paid') return e.is_free === false;
       return true;
     });
   }
 
-  // Filter by city
-  if (activeFilters.city) {
-    filteredEvents = filteredEvents.filter(event =>
-      event.city === activeFilters.city
-    );
+  // Cities (multi)
+  if (activeFilters.cities.length > 0) {
+    filtered = filtered.filter(e => activeFilters.cities.includes(e.city));
   }
 
-  // Render filtered events
-  renderEventCards(filteredEvents);
-
-  // Update filter button visibility
+  renderEventCards(filtered);
   updateClearButtonVisibility();
 }
 
 /**
- * Clear all active filters
+ * Clear all filters
  */
 function clearFilters() {
-  activeFilters = {
-    month: '',
-    industry: '',
-    cost: '',
-    city: ''
-  };
+  activeFilters = { month: '', industries: [], cost: '', cities: [] };
 
-  // Reset all filter dropdowns
+  // Reset dropdowns
   const monthFilter = document.getElementById('filter-month');
-  const industryFilter = document.getElementById('filter-industry');
   const costFilter = document.getElementById('filter-cost');
-  const cityFilter = document.getElementById('filter-city');
-
   if (monthFilter) monthFilter.value = '';
-  if (industryFilter) industryFilter.value = '';
   if (costFilter) costFilter.value = '';
-  if (cityFilter) cityFilter.value = '';
 
-  // Show all events
+  // Reset checkboxes
+  document.querySelectorAll('.multi-select-dropdown input').forEach(cb => cb.checked = false);
+
+  // Reset button labels
+  const industryBtn = document.getElementById('industry-btn');
+  const cityBtn = document.getElementById('city-btn');
+  if (industryBtn) industryBtn.textContent = 'All Industries ▾';
+  if (cityBtn) cityBtn.textContent = 'All Emirates ▾';
+
   renderEventCards(allEvents);
-
-  // Hide clear button
   updateClearButtonVisibility();
 }
 
 /**
- * Update clear button visibility based on active filters
+ * Update clear button visibility
  */
 function updateClearButtonVisibility() {
-  const clearBtn = document.getElementById('clear-filters-btn');
+  const clearBtn = document.getElementById('clear-filters');
   if (!clearBtn) return;
 
-  const hasActiveFilters = activeFilters.month || activeFilters.industry || activeFilters.cost || activeFilters.city;
-  clearBtn.style.display = hasActiveFilters ? 'inline-block' : 'none';
+  const hasFilters = activeFilters.month || activeFilters.industries.length > 0 || activeFilters.cost || activeFilters.cities.length > 0;
+  clearBtn.style.display = hasFilters ? 'inline-block' : 'none';
 }
 
 /**
- * Set all events (called when events are loaded from API)
- * @param {Array} events - Array of event objects
+ * Set all events
  */
 function setAllEvents(events) {
   allEvents = events || [];
-
-  // Populate industry filter options dynamically
-  populateIndustryFilter();
-
-  // Populate city filter options dynamically
-  populateCityFilter();
-
-  // Render all events initially
   renderEventCards(allEvents);
 }
 
 /**
- * Populate industry filter with unique industries from events
- */
-function populateIndustryFilter() {
-  const industryFilter = document.getElementById('filter-industry');
-  if (!industryFilter) return;
-
-  // Get unique industries
-  const industries = [...new Set(allEvents.map(e => e.industry).filter(Boolean))];
-  industries.sort();
-
-  // Clear existing options (keep "All Industries")
-  industryFilter.innerHTML = '<option value="">All Industries</option>';
-
-  // Add industry options
-  industries.forEach(industry => {
-    const option = document.createElement('option');
-    option.value = industry;
-    option.textContent = industry;
-    industryFilter.appendChild(option);
-  });
-}
-
-/**
- * Populate city filter with unique cities from events
- */
-function populateCityFilter() {
-  const cityFilter = document.getElementById('filter-city');
-  if (!cityFilter) return;
-
-  // Get unique cities
-  const cities = [...new Set(allEvents.map(e => e.city).filter(Boolean))];
-  cities.sort();
-
-  // Clear existing options (keep "All Emirates")
-  cityFilter.innerHTML = '<option value="">All Emirates</option>';
-
-  // Add city options
-  cities.forEach(city => {
-    const option = document.createElement('option');
-    option.value = city;
-    option.textContent = city;
-    cityFilter.appendChild(option);
-  });
-}
-
-/**
- * Get filter query string for API request (future use)
- * @returns {string} Query string
+ * Get filter query string
  */
 function getFilterQueryString() {
   const params = new URLSearchParams();
-
   if (activeFilters.month) params.append('month', activeFilters.month);
-  if (activeFilters.industry) params.append('industry', activeFilters.industry);
+  if (activeFilters.industries.length > 0) params.append('industries', activeFilters.industries.join(','));
   if (activeFilters.cost) params.append('cost', activeFilters.cost);
-  if (activeFilters.city) params.append('city', activeFilters.city);
-
+  if (activeFilters.cities.length > 0) params.append('cities', activeFilters.cities.join(','));
   return params.toString();
 }
 
-// Export functions globally
+// Export
 window.initializeFilters = initializeFilters;
 window.applyFilters = applyFilters;
 window.clearFilters = clearFilters;
