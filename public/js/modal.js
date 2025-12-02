@@ -148,6 +148,27 @@ function buildEventModalContent(event) {
       ${event.is_free ? 'Register for Free' : 'Book Now'}
     </button>
 
+    <div class="share-buttons" style="margin-top: var(--space-lg); text-align: center;">
+      <p style="font-size: 14px; color: var(--grey-dark); margin-bottom: var(--space-sm);">Share this event</p>
+      <div style="display: flex; gap: var(--space-sm); justify-content: center; flex-wrap: wrap;">
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(event.registration_url)}"
+           target="_blank" rel="noopener"
+           style="padding: 8px 16px; background: #0077B5; color: white; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">
+          LinkedIn
+        </a>
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(event.title + ' - ' + (event.city || 'UAE'))}&url=${encodeURIComponent(event.registration_url)}"
+           target="_blank" rel="noopener"
+           style="padding: 8px 16px; background: #1DA1F2; color: white; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">
+          Twitter
+        </a>
+        <a href="https://wa.me/?text=${encodeURIComponent(event.title + ' - Check out this event: ' + event.registration_url)}"
+           target="_blank" rel="noopener"
+           style="padding: 8px 16px; background: #25D366; color: white; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">
+          WhatsApp
+        </a>
+      </div>
+    </div>
+
     <p class="privacy-note" style="margin-top: var(--space-md);">
       You'll be redirected to the event organizer's registration page
     </p>

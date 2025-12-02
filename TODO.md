@@ -21,9 +21,10 @@
 - [ ] Add deduplication logic to all scrapers
 
 ### Site Features
-- [ ] SEO meta tags and schema markup
-- [ ] Social sharing buttons on event cards
+- [x] SEO meta tags and schema markup
+- [x] Social sharing buttons on event modal
 - [ ] Analytics setup
+- [ ] Create og-image.png for social sharing preview
 
 ---
 
