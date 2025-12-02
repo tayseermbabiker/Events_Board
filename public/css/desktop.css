@@ -12,13 +12,8 @@
     gap: var(--space-lg);
   }
 
-  /* Newsletter interests: 4 columns on tablet */
-  .newsletter-interests {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
   .newsletter-box {
-    max-width: 700px;
+    max-width: 100%;
   }
 
   /* Newsletter: Side by side */
@@ -73,13 +68,8 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Newsletter interests: 5 columns on desktop */
-  .newsletter-interests {
-    grid-template-columns: repeat(5, 1fr);
-  }
-
   .newsletter-box {
-    max-width: 900px;
+    max-width: 100%;
   }
 
   /* Hover effects for desktop */

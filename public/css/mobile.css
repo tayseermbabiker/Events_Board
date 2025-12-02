@@ -572,8 +572,6 @@ body {
 
 .newsletter-box {
   text-align: center;
-  max-width: 500px;
-  margin: 0 auto;
 }
 
 .newsletter-box h2 {
@@ -597,10 +595,11 @@ body {
 }
 
 .newsletter-interests {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-sm);
   margin-bottom: var(--space-lg);
+  justify-content: center;
 }
 
 .interest-chip {
@@ -612,7 +611,7 @@ body {
 }
 
 .interest-chip span {
-  display: block;
+  display: inline-block;
   padding: var(--space-sm) var(--space-md);
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(139, 92, 246, 0.25);
@@ -621,6 +620,7 @@ body {
   font-size: var(--font-small);
   transition: all var(--transition-base);
   text-align: center;
+  white-space: nowrap;
 }
 
 .interest-chip:hover span {
@@ -636,11 +636,7 @@ body {
   font-weight: 500;
 }
 
-/* Featured chip (All Industries) spans full width */
-.interest-chip.featured {
-  grid-column: 1 / -1;
-}
-
+/* Featured chip (All Industries) */
 .interest-chip.featured span {
   background: rgba(139, 92, 246, 0.15);
   border-color: rgba(139, 92, 246, 0.4);
