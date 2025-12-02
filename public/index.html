@@ -76,61 +76,53 @@
         <div class="container">
             <div class="filter-chips">
 
-                <!-- Month Filter (keep as dropdown) -->
+                <!-- Month Filter -->
                 <select id="filter-month" class="filter-chip" aria-label="Filter by month">
                     <option value="">All Months</option>
                     <!-- Populated by JavaScript -->
                 </select>
 
-                <!-- Industry Filter (Multi-select) -->
-                <div class="filter-dropdown" id="industry-dropdown">
-                    <button type="button" class="filter-chip filter-toggle" id="industry-toggle">
-                        All Industries <span class="filter-count" id="industry-count"></span>
-                    </button>
-                    <div class="filter-panel" id="industry-panel">
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Technology"> Technology</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Finance"> Finance</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Marketing"> Marketing</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Healthcare"> Healthcare</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Real Estate"> Real Estate</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Education"> Education</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Government"> Government</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Legal"> Legal</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Hospitality"> Hospitality</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Food & Beverage"> Food & Beverage</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Manufacturing"> Manufacturing</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Retail"> Retail</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Transportation"> Transportation</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Energy"> Energy</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Media"> Media</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Telecommunications"> Telecom</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Construction"> Construction</label>
-                        <label class="filter-option"><input type="checkbox" name="industry" value="Agriculture"> Agriculture</label>
-                    </div>
-                </div>
+                <!-- Industry Filter -->
+                <select id="filter-industry" class="filter-chip" aria-label="Filter by industry">
+                    <option value="">All Industries</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Real Estate">Real Estate</option>
+                    <option value="Education">Education</option>
+                    <option value="Government">Government</option>
+                    <option value="Legal">Legal</option>
+                    <option value="Hospitality">Hospitality</option>
+                    <option value="Food & Beverage">Food & Beverage</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Energy">Energy</option>
+                    <option value="Media">Media</option>
+                    <option value="Telecommunications">Telecom</option>
+                    <option value="Construction">Construction</option>
+                    <option value="Agriculture">Agriculture</option>
+                </select>
 
-                <!-- Cost Filter (keep as dropdown) -->
+                <!-- Cost Filter -->
                 <select id="filter-cost" class="filter-chip" aria-label="Filter by cost">
                     <option value="">All Costs</option>
                     <option value="free">Free</option>
                     <option value="paid">Paid</option>
                 </select>
 
-                <!-- City Filter (Multi-select) -->
-                <div class="filter-dropdown" id="city-dropdown">
-                    <button type="button" class="filter-chip filter-toggle" id="city-toggle">
-                        All Emirates <span class="filter-count" id="city-count"></span>
-                    </button>
-                    <div class="filter-panel" id="city-panel">
-                        <label class="filter-option"><input type="checkbox" name="city" value="Dubai"> Dubai</label>
-                        <label class="filter-option"><input type="checkbox" name="city" value="Abu Dhabi"> Abu Dhabi</label>
-                        <label class="filter-option"><input type="checkbox" name="city" value="Sharjah"> Sharjah</label>
-                        <label class="filter-option"><input type="checkbox" name="city" value="Ajman"> Ajman</label>
-                        <label class="filter-option"><input type="checkbox" name="city" value="Ras Al Khaimah"> Ras Al Khaimah</label>
-                        <label class="filter-option"><input type="checkbox" name="city" value="Fujairah"> Fujairah</label>
-                        <label class="filter-option"><input type="checkbox" name="city" value="Umm Al Quwain"> Umm Al Quwain</label>
-                    </div>
-                </div>
+                <!-- City Filter -->
+                <select id="filter-city" class="filter-chip" aria-label="Filter by city">
+                    <option value="">All UAE</option>
+                    <option value="Dubai">Dubai</option>
+                    <option value="Abu Dhabi">Abu Dhabi</option>
+                    <option value="Sharjah">Sharjah</option>
+                    <option value="Ajman">Ajman</option>
+                    <option value="RAK">Ras Al Khaimah</option>
+                    <option value="Fujairah">Fujairah</option>
+                    <option value="UAQ">Umm Al Quwain</option>
+                </select>
 
                 <!-- Clear Filters -->
                 <button id="clear-filters" class="btn-text">Clear All</button>
