@@ -147,8 +147,8 @@ body {
   background: white;
   border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  z-index: 1000;
   min-width: 180px;
   max-height: 250px;
   overflow-y: auto;
