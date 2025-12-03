@@ -152,3 +152,28 @@ Show me:
 5. The Airtable node configuration
 
 Once I confirm DIFC works, we'll move to ADGM.
+
+
+
+ Tier 1 (Must Have):
+  | Source        | URL                         | Events/Month |
+  |---------------|-----------------------------|--------------|
+  | Dubai Chamber | dubaichambers.com/en/events | 10-20        |
+  | Meetup UAE    | meetup.com/find/ae--dubai/  | 40-60        |
+  | DIFC Events   | difc.com/whats-on/events    | 10-15        |
+  | ADGM Events   | adgm.com/events             | 5-10         |
+
+  Tier 2 - Venues (Big Numbers):
+  | Source              | URL                      | Events/Month |
+  |---------------------|--------------------------|--------------|
+  | DWTC                | dwtc.com/en/events/      | 30-50        |
+  | ADNEC               | adnec.ae/en/eventlisting | 20-30        |
+  | Expo Centre Sharjah | expo-centre.ae/events/   | 10-15        |
+
+  Tier 3 - Supplementary:
+  | Source             | URL                               | Events/Month |
+  |--------------------|-----------------------------------|--------------|
+  | Hub71              | hub71.com/events                  | 5-10         |
+  | British Chamber    | britishchamberdubai.com/events    | 5-10         |
+  | AllConferenceAlert | allconferencealert.com/dubai.html | 10-20        |
+  | Edarabia Events    | edarabia.com/events/uae/          | 10-20        |
