@@ -29,7 +29,8 @@ exports.handler = async (event, context) => {
 
     // Build Airtable filter formula
     // Status is now a formula that returns "Active", "Expired", or "Ongoing"
-    let filterFormula = 'AND({status} = "Active", IS_AFTER({start_date}, NOW())';
+    // Include both "Active" and "Ongoing" events
+    let filterFormula = 'AND(OR({status} = "Active", {status} = "Ongoing"), IS_AFTER({start_date}, NOW())';
 
     // Filter by month
     if (month) {
