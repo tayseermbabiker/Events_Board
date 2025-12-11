@@ -79,6 +79,37 @@ body {
   box-shadow: 0 2px 8px rgba(139, 92, 246, 0.5);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.btn-create {
+  background: transparent;
+  color: var(--white);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-small);
+  font-weight: 600;
+  min-height: var(--touch-target);
+  transition: all var(--transition-base);
+  border: 2px solid rgba(139, 92, 246, 0.6);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.btn-create:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: #8B5CF6;
+}
+
+.btn-create:active {
+  transform: scale(0.95);
+}
+
 /* ===== FILTERS SECTION ===== */
 .filters-section {
   background: rgba(255, 255, 255, 0.98);
