@@ -244,3 +244,19 @@ This document outlines the remaining tasks to fully launch the UAE Events platfo
 ---
 
 **Good luck! 🚀 Your platform is 85% complete!**
+
+
+
+ # Tier 1
+  https://www.difc.com/whats-on/events
+  https://www.adgm.com/events
+  https://10times.com/unitedarabemirates
+
+  # Tier 2 - Venues
+  https://www.dwtc.com/en/events/
+  https://www.adnec.ae/en/eventlisting
+  https://expo-centre.ae/events/
+
+  # Tier 3
+  https://www.hub71.com/events
+  https://britishchamberdubai.com/events
