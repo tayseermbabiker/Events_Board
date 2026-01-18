@@ -11,10 +11,12 @@
 # AIRTABLE_API_KEY = your_airtable_api_key
 # AIRTABLE_BASE_ID = your_airtable_base_id
 
-# Redirects and rewrites
+# Redirects and rewrites (specific routes MUST come before wildcards)
+
+# JSON API for AI crawlers
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/api/events.json"
+  to = "/.netlify/functions/events-json"
   status = 200
 
 # Server-rendered events list for AI crawlers
@@ -23,10 +25,10 @@
   to = "/.netlify/functions/events-list"
   status = 200
 
-# JSON API alias (more intuitive URL)
+# Generic API wildcard (must be LAST)
 [[redirects]]
-  from = "/api/events.json"
-  to = "/.netlify/functions/events-json"
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
   status = 200
 
 # Headers for security
