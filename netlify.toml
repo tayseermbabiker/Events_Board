@@ -17,6 +17,18 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
+# Server-rendered events list for AI crawlers
+[[redirects]]
+  from = "/events-list"
+  to = "/.netlify/functions/events-list"
+  status = 200
+
+# JSON API alias (more intuitive URL)
+[[redirects]]
+  from = "/api/events.json"
+  to = "/.netlify/functions/events-json"
+  status = 200
+
 # Headers for security
 [[headers]]
   for = "/*"

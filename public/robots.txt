@@ -1,4 +1,55 @@
+# Conferix - UAE Professional Events
+# https://conferix.com
+
+# Allow all crawlers
 User-agent: *
 Allow: /
 
+# AI Crawlers - Welcome!
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# Search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Sitemaps
 Sitemap: https://conferix.com/sitemap.xml
+
+# AI-Friendly Endpoints
+# JSON API: https://conferix.com/api/events.json
+# HTML List: https://conferix.com/events-list
+# LLM Guide: https://conferix.com/llms.txt
