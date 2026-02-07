@@ -101,7 +101,7 @@ class MeetupScraper extends BaseScraper {
       city,
       organizer: group.name || null,
       industry: classifyIndustry(`${title} ${ev.description || ''}`),
-      is_free: ev.feeSettings?.amount === 0 || ev.isOnline === true,
+      is_free: !ev.feeSettings || ev.feeSettings?.amount === 0,
       registration_url: ev.eventUrl || (id ? `https://www.meetup.com/events/${id}/` : null),
       image_url: ev.imageUrl || ev.featuredEventPhoto?.highRes || ev.featuredEventPhoto?.photo || null,
       source: 'Meetup',
@@ -141,7 +141,7 @@ class MeetupScraper extends BaseScraper {
             city: this.detectCity(locationText),
             organizer: groupName,
             industry: classifyIndustry(title),
-            is_free: false,
+            is_free: true, // Most Meetup events are free — cards don't show pricing
             registration_url: link,
             image_url: img,
             source: 'Meetup',

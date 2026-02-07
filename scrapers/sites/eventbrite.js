@@ -88,7 +88,7 @@ class EventbriteScraper extends BaseScraper {
       city: city,
       organizer: ev.organizer?.name || location.name || null,
       industry: classifyIndustry(`${ev.name} ${ev.description || ''}`),
-      is_free: ev.isAccessibleForFree === true || (ev.offers && ev.offers.price === 0),
+      is_free: ev.isAccessibleForFree === true || (ev.offers && ev.offers.price === 0) || /free/i.test(`${ev.name} ${ev.description || ''}`),
       registration_url: ev.url,
       image_url: typeof ev.image === 'string' ? ev.image : ev.image?.url || null,
       source: 'Eventbrite',
