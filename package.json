@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "netlify dev",
     "build": "echo 'No build step required - static site'",
-    "deploy": "netlify deploy --prod"
+    "deploy": "netlify deploy --prod",
+    "scrape": "node scrapers/run-all.js"
   },
   "keywords": [
     "events",
@@ -19,7 +20,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "airtable": "^0.12.2"
+    "airtable": "^0.12.2",
+    "playwright": "^1.50.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",

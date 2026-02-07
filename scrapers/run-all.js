@@ -1,0 +1,119 @@
+const config = require('./config');
+const logger = require('./utils/logger');
+
+// Import all scrapers
+const EventbriteScraper = require('./sites/eventbrite');
+const DifcScraper = require('./sites/difc');
+const AdgmScraper = require('./sites/adgm');
+const MeetupScraper = require('./sites/meetup');
+const DwtcScraper = require('./sites/dwtc');
+const AdnecScraper = require('./sites/adnec');
+
+const ALL_SCRAPERS = [
+  { key: 'eventbrite', Cls: EventbriteScraper },
+  { key: 'dwtc',       Cls: DwtcScraper },
+  { key: 'adnec',      Cls: AdnecScraper },
+  { key: 'difc',       Cls: DifcScraper },
+  { key: 'adgm',       Cls: AdgmScraper },
+  { key: 'meetup',     Cls: MeetupScraper },
+];
+
+async function postBatch(events) {
+  const url = config.webhookUrl;
+  logger.info('Runner', `POSTing batch of ${events.length} events to ${url}`);
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(events),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`POST failed (${res.status}): ${text}`);
+  }
+
+  const json = await res.json();
+  logger.info('Runner', `Response: ${json.message || JSON.stringify(json.results)}`);
+  return json;
+}
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function main() {
+  const startTime = Date.now();
+  logger.info('Runner', '=== Scrape run started ===');
+
+  const allEvents = [];
+  const summary = {};
+
+  // Run scrapers sequentially to keep memory under control
+  for (const { key, Cls } of ALL_SCRAPERS) {
+    if (!config.scrapers[key]?.enabled) {
+      logger.info('Runner', `Skipping ${key} (disabled)`);
+      summary[key] = { status: 'skipped', count: 0 };
+      continue;
+    }
+
+    logger.info('Runner', `--- Running ${key} ---`);
+    const scraper = new Cls();
+    const events = await scraper.run();
+
+    summary[key] = { status: events.length > 0 ? 'ok' : 'empty', count: events.length };
+    allEvents.push(...events);
+
+    // Brief pause between scrapers
+    await sleep(1000);
+  }
+
+  logger.info('Runner', `Total events collected: ${allEvents.length}`);
+
+  if (allEvents.length === 0) {
+    logger.warn('Runner', 'No events scraped — nothing to POST');
+    printSummary(summary, startTime);
+    return;
+  }
+
+  // POST in batches
+  const batchSize = config.batch.size;
+  let posted = 0;
+  let errors = 0;
+
+  for (let i = 0; i < allEvents.length; i += batchSize) {
+    const batch = allEvents.slice(i, i + batchSize);
+    try {
+      await postBatch(batch);
+      posted += batch.length;
+    } catch (err) {
+      logger.error('Runner', `Batch POST failed: ${err.message}`);
+      errors += batch.length;
+    }
+
+    // Delay between batches to avoid rate limits
+    if (i + batchSize < allEvents.length) {
+      await sleep(config.batch.delayMs);
+    }
+  }
+
+  logger.info('Runner', `Posted: ${posted}, Errors: ${errors}`);
+  printSummary(summary, startTime);
+}
+
+function printSummary(summary, startTime) {
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  logger.info('Runner', '=== Summary ===');
+  for (const [key, val] of Object.entries(summary)) {
+    logger.info('Runner', `  ${key}: ${val.status} (${val.count} events)`);
+  }
+  logger.info('Runner', `Total time: ${elapsed}s`);
+  logger.info('Runner', '=== Scrape run complete ===');
+  logger.close();
+}
+
+main().catch(err => {
+  logger.error('Runner', `Fatal: ${err.message}`);
+  logger.close();
+  process.exit(1);
+});
