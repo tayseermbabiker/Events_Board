@@ -60,26 +60,27 @@ exports.handler = async (event, context) => {
           })
           .firstPage();
 
+        // Strip time from dates — Airtable date fields reject ISO timestamps
+        const toDate = (val) => val ? val.split('T')[0] : null;
+
         // Prepare event record
         const eventRecord = {
           title: eventData.title,
           description: eventData.description,
-          start_date: eventData.start_date,
-          end_date: eventData.end_date,
+          start_date: toDate(eventData.start_date),
+          end_date: toDate(eventData.end_date),
           venue_name: eventData.venue_name,
           venue_address: eventData.venue_address,
           city: eventData.city || 'Dubai',
           organizer: eventData.organizer,
           industry: eventData.industry || 'General',
-          tags: eventData.tags || [],
           is_free: eventData.is_free || false,
-          capacity: eventData.capacity,
           registration_url: eventData.registration_url,
           image_url: eventData.image_url,
           source: eventData.source,
           source_event_id: eventData.source_event_id,
-          status: 'pending', // Default to pending for manual review
-          scraped_at: new Date().toISOString()
+          status: 'Active',
+          scraped_at: toDate(new Date().toISOString())
         };
 
         if (existingRecords.length > 0) {
