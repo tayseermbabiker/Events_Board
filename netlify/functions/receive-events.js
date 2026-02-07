@@ -79,7 +79,6 @@ exports.handler = async (event, context) => {
           image_url: eventData.image_url,
           source: eventData.source,
           source_event_id: eventData.source_event_id,
-          status: 'Active',
           scraped_at: toDate(new Date().toISOString())
         };
 
