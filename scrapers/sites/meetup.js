@@ -119,7 +119,9 @@ class MeetupScraper extends BaseScraper {
         const title = await card.$eval('h2, h3', el => el.textContent.trim()).catch(() => null);
         const link = await card.$eval('a[href*="/events/"]', el => el.href).catch(() => null);
         const dateText = await card.$eval('time[datetime]', el => el.getAttribute('datetime')).catch(() => null);
-        const groupName = await card.$eval('p span, [data-testid*="group"]', el => el.textContent.trim()).catch(() => null);
+        // Extract group name from URL: meetup.com/GROUP-NAME/events/ID
+        const groupSlug = link ? link.match(/meetup\.com\/([^/]+)\/events/)?.[1] : null;
+        const groupName = groupSlug ? groupSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : null;
         const img = await card.$eval('img[alt]', el => el.src).catch(() => null);
         const locationText = await card.$$eval('p', els => {
           const loc = els.find(el => el.textContent.includes('Dubai') || el.textContent.includes('Abu Dhabi') || el.textContent.includes('Online'));
