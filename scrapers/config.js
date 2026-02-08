@@ -13,9 +13,15 @@ module.exports = {
   },
 
   scrapers: {
-    eventbrite: { enabled: true },
-    meetup:     { enabled: true },
-    luma:       { enabled: true },
+    eventbrite:    { enabled: true },
+    meetup:        { enabled: true },
+    luma:          { enabled: true },
+    emedevents:    { enabled: true },
+    primed:        { enabled: true },
+    ams:           { enabled: true },
+    clio:          { enabled: true },
+    startupgrind:  { enabled: true },
+    uschamber:     { enabled: true },
   },
 
   // Target cities
@@ -48,6 +54,8 @@ module.exports = {
     'Startup',
     'Finance',
     'Marketing',
+    'Healthcare',
+    'Legal',
     'General',
   ],
 };

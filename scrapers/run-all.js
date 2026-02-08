@@ -5,11 +5,23 @@ const logger = require('./utils/logger');
 const EventbriteScraper = require('./sites/eventbrite');
 const MeetupScraper = require('./sites/meetup');
 const LumaScraper = require('./sites/luma');
+const EMedEventsScraper = require('./sites/emedevents');
+const PriMedScraper = require('./sites/primed');
+const AMSScraper = require('./sites/ams');
+const ClioScraper = require('./sites/clio');
+const StartupGrindScraper = require('./sites/startupgrind');
+const USChamberScraper = require('./sites/uschamber');
 
 const ALL_SCRAPERS = [
-  { key: 'eventbrite', Cls: EventbriteScraper },
-  { key: 'meetup',     Cls: MeetupScraper },
-  { key: 'luma',       Cls: LumaScraper },
+  { key: 'eventbrite',    Cls: EventbriteScraper },
+  { key: 'meetup',        Cls: MeetupScraper },
+  { key: 'luma',          Cls: LumaScraper },
+  { key: 'emedevents',    Cls: EMedEventsScraper },
+  { key: 'primed',        Cls: PriMedScraper },
+  { key: 'ams',           Cls: AMSScraper },
+  { key: 'clio',          Cls: ClioScraper },
+  { key: 'startupgrind',  Cls: StartupGrindScraper },
+  { key: 'uschamber',     Cls: USChamberScraper },
 ];
 
 async function postBatch(events) {
