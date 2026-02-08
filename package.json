@@ -1,7 +1,7 @@
 {
-  "name": "usa-events-webapp",
+  "name": "uae-events-webapp",
   "version": "1.0.0",
-  "description": "USA Professional Events Platform - Event discovery for Tech, AI, Startup, Finance & Marketing",
+  "description": "UAE Professional Events Platform - Event discovery board with optional login and affiliate revenue",
   "main": "index.js",
   "scripts": {
     "dev": "netlify dev",
@@ -11,11 +11,9 @@
   },
   "keywords": [
     "events",
-    "usa",
-    "tech",
-    "ai",
-    "startup",
-    "fintech",
+    "uae",
+    "dubai",
+    "abu-dhabi",
     "professional-events",
     "networking"
   ],
@@ -26,6 +24,7 @@
     "playwright": "^1.50.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "netlify-cli": "^17.0.0"
   },
   "engines": {

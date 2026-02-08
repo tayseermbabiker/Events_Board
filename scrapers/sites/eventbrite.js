@@ -1,15 +1,9 @@
 const BaseScraper = require('../base-scraper');
-const config = require('../config');
 const logger = require('../utils/logger');
 const { classifyIndustry } = require('../utils/industry-map');
 
+const BASE_URL = 'https://www.eventbrite.com/d/united-arab-emirates/business--events/';
 const MAX_PAGES = 5;
-
-// Eventbrite search URLs per city
-const CITY_URLS = config.cities.map(city => ({
-  city,
-  url: `https://www.eventbrite.com/d/${city.toLowerCase().replace(/\s+/g, '-')}/business--events/`,
-}));
 
 class EventbriteScraper extends BaseScraper {
   constructor() {
@@ -19,60 +13,58 @@ class EventbriteScraper extends BaseScraper {
   async scrape() {
     const events = [];
 
-    for (const { city, url } of CITY_URLS) {
-      logger.info(this.name, `--- Scraping ${city} ---`);
+    for (let page = 1; page <= MAX_PAGES; page++) {
+      const url = page === 1 ? BASE_URL : `${BASE_URL}?page=${page}`;
+      logger.info(this.name, `Fetching page ${page}: ${url}`);
 
-      for (let page = 1; page <= MAX_PAGES; page++) {
-        const pageUrl = page === 1 ? url : `${url}?page=${page}`;
-        logger.info(this.name, `Fetching page ${page}: ${pageUrl}`);
+      try {
+        await this.page.goto(url, { waitUntil: 'domcontentloaded' });
+        await this.page.waitForTimeout(2000);
 
-        try {
-          await this.page.goto(pageUrl, { waitUntil: 'domcontentloaded' });
-          await this.page.waitForTimeout(2000);
+        // Try JSON-LD first
+        const jsonLd = await this.page.$$eval(
+          'script[type="application/ld+json"]',
+          scripts => scripts.map(s => {
+            try { return JSON.parse(s.textContent); } catch { return null; }
+          }).filter(Boolean)
+        );
 
-          // Try JSON-LD first
-          const jsonLd = await this.page.$$eval(
-            'script[type="application/ld+json"]',
-            scripts => scripts.map(s => {
-              try { return JSON.parse(s.textContent); } catch { return null; }
-            }).filter(Boolean)
-          );
-
-          const ldEvents = [];
-          for (const item of jsonLd.flat()) {
-            if (item['@type'] === 'Event') {
-              ldEvents.push(item);
-            } else if (item['@graph']) {
-              ldEvents.push(...item['@graph'].filter(g => g['@type'] === 'Event'));
-            } else if (Array.isArray(item.itemListElement)) {
-              for (const entry of item.itemListElement) {
-                const nested = entry.item || entry;
-                if (nested['@type'] === 'Event') ldEvents.push(nested);
-              }
+        // Extract events from JSON-LD: direct Event, @graph, or itemListElement
+        const ldEvents = [];
+        for (const item of jsonLd.flat()) {
+          if (item['@type'] === 'Event') {
+            ldEvents.push(item);
+          } else if (item['@graph']) {
+            ldEvents.push(...item['@graph'].filter(g => g['@type'] === 'Event'));
+          } else if (Array.isArray(item.itemListElement)) {
+            for (const entry of item.itemListElement) {
+              const nested = entry.item || entry;
+              if (nested['@type'] === 'Event') ldEvents.push(nested);
             }
           }
+        }
 
-          if (ldEvents.length > 0) {
-            for (const ev of ldEvents) {
-              events.push(this.parseJsonLd(ev));
-            }
-            logger.info(this.name, `Page ${page}: ${ldEvents.length} events from JSON-LD`);
-          } else {
-            const domEvents = await this.extractFromDom();
-            events.push(...domEvents);
-            logger.info(this.name, `Page ${page}: ${domEvents.length} events from DOM`);
+        if (ldEvents.length > 0) {
+          for (const ev of ldEvents) {
+            events.push(this.parseJsonLd(ev));
           }
+          logger.info(this.name, `Page ${page}: ${ldEvents.length} events from JSON-LD`);
+        } else {
+          // Fallback: DOM extraction
+          const domEvents = await this.extractFromDom();
+          events.push(...domEvents);
+          logger.info(this.name, `Page ${page}: ${domEvents.length} events from DOM`);
+        }
 
-          // Check if there's a next page
-          const hasNext = await this.page.$('button[data-testid="pagination-next"]:not([disabled]), a[data-testid="pagination-next"]');
-          if (!hasNext && page < MAX_PAGES) {
-            logger.info(this.name, `No more pages after page ${page}`);
-            break;
-          }
-        } catch (err) {
-          logger.warn(this.name, `Page ${page} failed: ${err.message}`);
+        // Check if there's a next page
+        const hasNext = await this.page.$('button[data-testid="pagination-next"]:not([disabled]), a[data-testid="pagination-next"]');
+        if (!hasNext && page < MAX_PAGES) {
+          logger.info(this.name, `No more pages after page ${page}`);
           break;
         }
+      } catch (err) {
+        logger.warn(this.name, `Page ${page} failed: ${err.message}`);
+        break;
       }
     }
 
@@ -83,7 +75,7 @@ class EventbriteScraper extends BaseScraper {
     const location = ev.location || {};
     const address = location.address || {};
     const city = this.detectCity(
-      `${address.addressLocality || ''} ${address.addressRegion || ''}`
+      `${address.addressLocality || ''} ${address.addressRegion || ''} ${address.addressCountry || ''}`
     );
 
     return {
@@ -93,7 +85,7 @@ class EventbriteScraper extends BaseScraper {
       end_date: ev.endDate || null,
       venue_name: location.name || null,
       venue_address: address.streetAddress || null,
-      city,
+      city: city,
       organizer: ev.organizer?.name || location.name || null,
       industry: classifyIndustry(`${ev.name} ${ev.description || ''}`),
       is_free: ev.isAccessibleForFree === true || (ev.offers && ev.offers.price === 0) || /free/i.test(`${ev.name} ${ev.description || ''}`),
@@ -126,7 +118,7 @@ class EventbriteScraper extends BaseScraper {
             city: null,
             organizer: null,
             industry: classifyIndustry(title),
-            is_free: /free/i.test(title),
+            is_free: false,
             registration_url: link,
             image_url: img,
             source: 'Eventbrite',
@@ -146,21 +138,15 @@ class EventbriteScraper extends BaseScraper {
   }
 
   detectCity(text) {
-    const lower = (text || '').toLowerCase();
-    if (lower.includes('austin')) return 'Austin';
-    if (lower.includes('san francisco') || lower.includes('sf')) return 'San Francisco';
-    if (lower.includes('san jose')) return 'San Jose';
-    if (lower.includes('oakland')) return 'Oakland';
-    if (lower.includes('new york') || lower.includes('nyc') || lower.includes('manhattan')) return 'New York';
-    if (lower.includes('brooklyn')) return 'Brooklyn';
-    if (lower.includes('los angeles') || lower.includes(' la ')) return 'Los Angeles';
-    if (lower.includes('miami')) return 'Miami';
-    if (lower.includes('chicago')) return 'Chicago';
-    if (lower.includes('seattle')) return 'Seattle';
-    if (lower.includes('denver')) return 'Denver';
-    if (lower.includes('boston')) return 'Boston';
-    if (lower.includes('washington') || lower.includes(' dc')) return 'Washington DC';
-    return null;
+    const lower = text.toLowerCase();
+    if (lower.includes('abu dhabi') || text.includes('أبوظبي') || text.includes('أبو ظبي')) return 'Abu Dhabi';
+    if (lower.includes('sharjah') || text.includes('الشارقة')) return 'Sharjah';
+    if (lower.includes('ajman') || text.includes('عجمان')) return 'Ajman';
+    if (lower.includes('ras al khaim')) return 'Ras Al Khaimah';
+    if (lower.includes('fujairah') || text.includes('الفجيرة')) return 'Fujairah';
+    if (lower.includes('umm al quwain')) return 'Umm Al Quwain';
+    if (lower.includes('dubai') || text.includes('دبي')) return 'Dubai';
+    return 'Dubai';
   }
 }
 

@@ -3,25 +3,19 @@ const logger = require('./utils/logger');
 
 // Import all scrapers
 const EventbriteScraper = require('./sites/eventbrite');
+const DifcScraper = require('./sites/difc');
+const AdgmScraper = require('./sites/adgm');
 const MeetupScraper = require('./sites/meetup');
-const LumaScraper = require('./sites/luma');
-const EMedEventsScraper = require('./sites/emedevents');
-const PriMedScraper = require('./sites/primed');
-const AMSScraper = require('./sites/ams');
-const ClioScraper = require('./sites/clio');
-const StartupGrindScraper = require('./sites/startupgrind');
-const USChamberScraper = require('./sites/uschamber');
+const DwtcScraper = require('./sites/dwtc');
+const AdnecScraper = require('./sites/adnec');
 
 const ALL_SCRAPERS = [
-  { key: 'eventbrite',    Cls: EventbriteScraper },
-  { key: 'meetup',        Cls: MeetupScraper },
-  { key: 'luma',          Cls: LumaScraper },
-  { key: 'emedevents',    Cls: EMedEventsScraper },
-  { key: 'primed',        Cls: PriMedScraper },
-  { key: 'ams',           Cls: AMSScraper },
-  { key: 'clio',          Cls: ClioScraper },
-  { key: 'startupgrind',  Cls: StartupGrindScraper },
-  { key: 'uschamber',     Cls: USChamberScraper },
+  { key: 'eventbrite', Cls: EventbriteScraper },
+  { key: 'dwtc',       Cls: DwtcScraper },
+  { key: 'adnec',      Cls: AdnecScraper },
+  { key: 'difc',       Cls: DifcScraper },
+  { key: 'adgm',       Cls: AdgmScraper },
+  { key: 'meetup',     Cls: MeetupScraper },
 ];
 
 async function postBatch(events) {
@@ -50,7 +44,7 @@ async function sleep(ms) {
 
 async function main() {
   const startTime = Date.now();
-  logger.info('Runner', '=== USA Scrape run started ===');
+  logger.info('Runner', '=== Scrape run started ===');
 
   const allEvents = [];
   const summary = {};
@@ -114,7 +108,7 @@ function printSummary(summary, startTime) {
     logger.info('Runner', `  ${key}: ${val.status} (${val.count} events)`);
   }
   logger.info('Runner', `Total time: ${elapsed}s`);
-  logger.info('Runner', '=== USA Scrape run complete ===');
+  logger.info('Runner', '=== Scrape run complete ===');
   logger.close();
 }
 

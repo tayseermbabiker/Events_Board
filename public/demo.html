@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UAE Events - Professional Networking & Business Events</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/mobile.css">
+  <link rel="stylesheet" href="css/desktop.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <div class="logo">
+        <h1>UAE Events</h1>
+        <p class="tagline">Professional Networking & Business Events</p>
+      </div>
+      <button class="btn-login" id="login-btn" onclick="openLoginModal()">Login</button>
+    </div>
+  </header>
+
+  <!-- Filters Section -->
+  <section class="filters-section">
+    <div class="container">
+      <div class="filter-chips">
+        <select class="filter-chip" id="filter-month">
+          <option value="">All Months</option>
+        </select>
+
+        <select class="filter-chip" id="filter-industry">
+          <option value="">All Industries</option>
+          <option value="Technology">Technology</option>
+          <option value="Finance">Finance</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Real Estate">Real Estate</option>
+        </select>
+
+        <select class="filter-chip" id="filter-city">
+          <option value="">All Emirates</option>
+          <option value="Dubai">Dubai</option>
+          <option value="Abu Dhabi">Abu Dhabi</option>
+          <option value="Sharjah">Sharjah</option>
+        </select>
+
+        <button class="btn-text" id="clear-filters-btn" onclick="clearFilters()" style="display: none;">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events Container -->
+  <main class="events-container">
+    <div class="container">
+      <!-- Loading State -->
+      <div class="loading" id="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Loading events...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="empty-state" style="display: none;">
+        <div class="empty-icon">📅</div>
+        <h3>No Events Found</h3>
+        <p>Try adjusting your filters or check back soon for new events</p>
+        <button class="btn-primary" onclick="clearFilters()">Show All Events</button>
+      </div>
+
+      <!-- Events Grid -->
+      <div class="events-grid" id="events-grid">
+        <!-- Events will be rendered here by JavaScript -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2025 UAE Events. All rights reserved.</p>
+      <p class="footer-note">Discover professional networking and business events across the UAE</p>
+    </div>
+  </footer>
+
+  <!-- Event Detail Modal (Single Reusable Modal) -->
+  <div class="event-modal" id="event-modal">
+    <div class="modal-overlay" onclick="closeEventModal()"></div>
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeEventModal()" aria-label="Close modal">&times;</button>
+      <div class="modal-body" id="modal-body">
+        <!-- Event details injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="login-modal" id="login-modal">
+    <div class="modal-overlay" onclick="closeLoginModal()"></div>
+    <div class="modal-sheet modal-small" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeLoginModal()" aria-label="Close modal">&times;</button>
+      <div class="modal-body" id="login-modal-body">
+        <!-- Login form injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="js/utils.js"></script>
+  <script src="js/eventCards.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/login.js"></script>
+
+  <!-- Demo Data & Initialization -->
+  <script>
+    // Sample demo events data
+    const demoEvents = [
+      {
+        id: 'demo-1',
+        title: 'AI & Machine Learning Summit 2025',
+        description: 'Join industry leaders for a deep dive into the latest AI innovations transforming business. Network with tech professionals and explore real-world case studies.',
+        start_date: '2025-11-15T09:00:00',
+        end_date: '2025-11-15T17:00:00',
+        venue_name: 'Dubai World Trade Centre',
+        venue_address: 'Sheikh Rashid Tower, Convention Gate',
+        city: 'Dubai',
+        organizer: 'Tech Events UAE',
+        industry: 'Technology',
+        tags: ['AI', 'Machine Learning', 'Innovation'],
+        is_free: false,
+        capacity: 500,
+        registration_url: 'https://example.com/register',
+        image_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+        source: 'Eventbrite'
+      },
+      {
+        id: 'demo-2',
+        title: 'Startup Networking Meetup',
+        description: 'Connect with fellow entrepreneurs, investors, and startup enthusiasts. Share ideas, find co-founders, and build valuable connections in the UAE startup ecosystem.',
+        start_date: '2025-10-20T18:00:00',
+        end_date: '2025-10-20T21:00:00',
+        venue_name: 'Hub71',
+        venue_address: 'Al Maryah Island, Abu Dhabi',
+        city: 'Abu Dhabi',
+        organizer: 'Startup Community UAE',
+        industry: 'Technology',
+        tags: ['Startups', 'Networking', 'Entrepreneurs'],
+        is_free: true,
+        capacity: 100,
+        registration_url: 'https://example.com/register',
+        image_url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
+        source: 'Meetup'
+      },
+      {
+        id: 'demo-3',
+        title: 'Real Estate Investment Forum',
+        description: 'Explore the latest trends in UAE real estate market. Expert panels on investment strategies, market analysis, and regulatory updates for 2025.',
+        start_date: '2025-10-25T10:00:00',
+        end_date: '2025-10-25T16:00:00',
+        venue_name: 'Emirates Towers',
+        venue_address: 'Sheikh Zayed Road, Dubai',
+        city: 'Dubai',
+        organizer: 'Dubai Real Estate Council',
+        industry: 'Real Estate',
+        tags: ['Investment', 'Property', 'Finance'],
+        is_free: false,
+        capacity: 300,
+        registration_url: 'https://example.com/register',
+        image_url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800',
+        source: 'Dubai Chambers'
+      },
+      {
+        id: 'demo-4',
+        title: 'Women in Business Leadership Summit',
+        description: 'Empowering women leaders across the UAE. Keynote speeches, panel discussions, and networking opportunities with successful female executives.',
+        start_date: '2025-11-05T09:00:00',
+        end_date: '2025-11-05T15:00:00',
+        venue_name: 'Jumeirah Emirates Towers',
+        venue_address: 'Sheikh Zayed Road, Dubai',
+        city: 'Dubai',
+        organizer: 'Women Leaders UAE',
+        industry: 'Finance',
+        tags: ['Leadership', 'Women', 'Networking'],
+        is_free: true,
+        capacity: 200,
+        registration_url: 'https://example.com/register',
+        image_url: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800',
+        source: 'LinkedIn Events'
+      },
+      {
+        id: 'demo-5',
+        title: 'Healthcare Innovation Conference',
+        description: 'Discover cutting-edge healthcare technologies and innovations. Learn from medical professionals about digital health, telemedicine, and AI in healthcare.',
+        start_date: '2025-10-28T08:00:00',
+        end_date: '2025-10-28T17:00:00',
+        venue_name: 'Cleveland Clinic Abu Dhabi',
+        venue_address: 'Al Maryah Island, Abu Dhabi',
+        city: 'Abu Dhabi',
+        organizer: 'Healthcare Leaders UAE',
+        industry: 'Healthcare',
+        tags: ['Health Tech', 'Innovation', 'Medical'],
+        is_free: false,
+        capacity: 250,
+        registration_url: 'https://example.com/register',
+        image_url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800',
+        source: 'Abu Dhabi Chambers'
+      },
+      {
+        id: 'demo-6',
+        title: 'Blockchain & Cryptocurrency Workshop',
+        description: 'Learn the fundamentals of blockchain technology and cryptocurrency trading. Hands-on workshop with industry experts and live trading demonstrations.',
+        start_date: '2025-11-10T14:00:00',
+        end_date: '2025-11-10T18:00:00',
+        venue_name: 'DIFC Innovation Hub',
+        venue_address: 'Dubai International Financial Centre',
+        city: 'Dubai',
+        organizer: 'Crypto Academy UAE',
+        industry: 'Finance',
+        tags: ['Blockchain', 'Crypto', 'Technology'],
+        is_free: true,
+        capacity: 80,
+        registration_url: 'https://example.com/register',
+        image_url: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800',
+        source: 'DIFC'
+      }
+    ];
+
+    // Initialize app with demo data
+    function initDemoApp() {
+      console.log('🚀 Initializing Demo App...');
+
+      // Initialize login state
+      initializeLoginState();
+
+      // Initialize filters
+      initializeFilters();
+
+      // Load demo events
+      setAllEvents(demoEvents);
+
+      console.log('✅ Demo app initialized with', demoEvents.length, 'events');
+    }
+
+    // Override handleBooking for demo (just open URL without tracking)
+    window.handleBooking = function(eventId, registrationUrl) {
+      alert('Demo Mode: In production, this would track your click and open the registration page.');
+      console.log('Booking clicked:', eventId);
+    };
+
+    // Override handleLoginSubmit for demo
+    window.handleLoginSubmit = function(e) {
+      e.preventDefault();
+      const name = document.getElementById('login-name').value;
+      const email = document.getElementById('login-email').value;
+
+      // Simulate successful login
+      const demoUser = {
+        id: 'demo-user-1',
+        first_name: name.split(' ')[0],
+        email: email
+      };
+
+      saveUser(demoUser);
+      updateUIForLoggedInUser(demoUser);
+
+      alert(`Demo Mode: Welcome ${demoUser.first_name}! In production, this would save to Airtable.`);
+      closeLoginModal();
+    };
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDemoApp);
+    } else {
+      initDemoApp();
+    }
+  </script>
+</body>
+</html>

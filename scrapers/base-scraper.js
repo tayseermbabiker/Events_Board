@@ -18,8 +18,6 @@ class BaseScraper {
     const context = await this.browser.newContext({
       userAgent: config.browser.userAgent,
       viewport: { width: 1280, height: 800 },
-      locale: 'en-US',
-      timezoneId: 'America/New_York',
     });
     this.page = await context.newPage();
     this.page.setDefaultTimeout(config.browser.timeout);
@@ -84,7 +82,8 @@ class BaseScraper {
   }
 
   /**
-   * Main entry point. Never throws — returns [] on failure.
+   * Main entry point: launch browser, scrape, validate, close.
+   * Returns validated events array. Never throws — returns [] on failure.
    */
   async run() {
     try {

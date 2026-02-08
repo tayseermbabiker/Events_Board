@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQMKXV66K0"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-TQMKXV66K0');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover UAE's best professional events, conferences, and networking opportunities. All emirates, all industries.">
+    <meta name="theme-color" content="#8B5CF6">
+    <title>Conferix | UAE Professional Events, Conferences & Networking</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="keywords" content="UAE events, Dubai conferences, Abu Dhabi networking, professional events UAE, business meetups Dubai, tech events UAE, finance conferences Dubai">
+    <meta name="author" content="Conferix">
+    <meta name="robots" content="index, follow">
+    <meta name="google-site-verification" content="IIBTwJ_2VhVRuXoQCbNloPM51Kvs0zKZuxZ3dLjCiKM">
+    <link rel="canonical" href="https://conferix.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://conferix.com/">
+    <meta property="og:title" content="Conferix | UAE Professional Events, Conferences & Networking">
+    <meta property="og:site_name" content="Conferix">
+    <meta property="og:description" content="Discover UAE's best professional events, conferences, and networking opportunities. All emirates, all industries.">
+    <meta property="og:image" content="https://conferix.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://conferix.com/">
+    <meta name="twitter:title" content="Conferix | UAE Professional Events, Conferences & Networking">
+    <meta name="twitter:description" content="Discover UAE's best professional events, conferences, and networking opportunities. All emirates, all industries.">
+    <meta name="twitter:image" content="https://conferix.com/og-image.png">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Conferix",
+        "description": "Discover UAE's best professional events, conferences, and networking opportunities",
+        "url": "https://conferix.com/",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://conferix.com/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="stylesheet" href="/css/desktop.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Conferix</h1>
+                    <p class="tagline">Professional Events, Curated</p>
+                </div>
+                <div class="header-actions">
+                    <a href="/faq.html" class="btn-faq">FAQ</a>
+                    <a href="/submit.html" class="btn-create">+ Create Event</a>
+                    <button id="login-btn" class="btn-login">Login</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filters Section (Sticky) -->
+    <section class="filters-section" id="filters">
+        <div class="container">
+            <div class="filter-chips">
+
+                <!-- Month Filter -->
+                <select id="filter-month" class="filter-chip" aria-label="Filter by month">
+                    <option value="">All Months</option>
+                    <!-- Populated by JavaScript -->
+                </select>
+
+                <!-- Industry Filter (Multi-select) -->
+                <div class="multi-select" id="industry-select">
+                    <button type="button" class="filter-chip multi-select-btn" id="industry-btn">
+                        All Industries ▾
+                    </button>
+                    <div class="multi-select-dropdown" id="industry-dropdown">
+                        <label><input type="checkbox" value="Technology"> Technology</label>
+                        <label><input type="checkbox" value="Finance"> Finance</label>
+                        <label><input type="checkbox" value="Marketing"> Marketing</label>
+                        <label><input type="checkbox" value="Healthcare"> Healthcare</label>
+                        <label><input type="checkbox" value="Real Estate"> Real Estate</label>
+                        <label><input type="checkbox" value="Education"> Education</label>
+                        <label><input type="checkbox" value="Government"> Government</label>
+                        <label><input type="checkbox" value="Legal"> Legal</label>
+                        <label><input type="checkbox" value="Hospitality"> Hospitality</label>
+                        <label><input type="checkbox" value="Food & Beverage"> Food & Beverage</label>
+                        <label><input type="checkbox" value="Manufacturing"> Manufacturing</label>
+                        <label><input type="checkbox" value="Retail"> Retail</label>
+                        <label><input type="checkbox" value="Transportation"> Transportation</label>
+                        <label><input type="checkbox" value="Energy"> Energy</label>
+                        <label><input type="checkbox" value="Media"> Media</label>
+                        <label><input type="checkbox" value="Telecommunications"> Telecom</label>
+                        <label><input type="checkbox" value="Construction"> Construction</label>
+                        <label><input type="checkbox" value="Agriculture"> Agriculture</label>
+                    </div>
+                </div>
+
+                <!-- Cost Filter -->
+                <select id="filter-cost" class="filter-chip" aria-label="Filter by cost">
+                    <option value="">All Costs</option>
+                    <option value="free">Free</option>
+                    <option value="paid">Paid</option>
+                </select>
+
+                <!-- City Filter (Multi-select) -->
+                <div class="multi-select" id="city-select">
+                    <button type="button" class="filter-chip multi-select-btn" id="city-btn">
+                        All Emirates ▾
+                    </button>
+                    <div class="multi-select-dropdown" id="city-dropdown">
+                        <label><input type="checkbox" value="Dubai"> Dubai</label>
+                        <label><input type="checkbox" value="Abu Dhabi"> Abu Dhabi</label>
+                        <label><input type="checkbox" value="Sharjah"> Sharjah</label>
+                        <label><input type="checkbox" value="Ajman"> Ajman</label>
+                        <label><input type="checkbox" value="Ras Al Khaimah"> Ras Al Khaimah</label>
+                        <label><input type="checkbox" value="Fujairah"> Fujairah</label>
+                        <label><input type="checkbox" value="Umm Al Quwain"> Umm Al Quwain</label>
+                    </div>
+                </div>
+
+                <!-- Clear Filters -->
+                <button id="clear-filters" class="btn-text">Clear All</button>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Events Container -->
+    <main class="events-container">
+        <div class="container">
+
+            <!-- Loading State -->
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading professional events...</p>
+            </div>
+
+            <!-- Events Grid -->
+            <div id="events-grid" class="events-grid">
+                <!-- Event cards populated by JavaScript -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <div class="empty-icon">📅</div>
+                <h3>No events found</h3>
+                <p>Try adjusting your filters or check back later for new events.</p>
+                <button id="reset-filters" class="btn-primary">Show All Events</button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Newsletter Signup Section -->
+    <section class="newsletter-section" id="newsletter">
+        <div class="container">
+            <div class="newsletter-box">
+                <h2>Never Miss a Professional Event</h2>
+                <p>Get UAE events in your inbox every Monday. Select your interests:</p>
+
+                <form id="newsletter-form" class="newsletter-form">
+                    <div class="newsletter-interests">
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="technology">
+                            <span>Technology</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="finance">
+                            <span>Finance</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="marketing">
+                            <span>Marketing</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="healthcare">
+                            <span>Healthcare</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="realestate">
+                            <span>Real Estate</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="education">
+                            <span>Education</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="government">
+                            <span>Government</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="legal">
+                            <span>Legal</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="hospitality">
+                            <span>Hospitality</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="foodbeverage">
+                            <span>Food & Beverage</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="manufacturing">
+                            <span>Manufacturing</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="retail">
+                            <span>Retail</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="transportation">
+                            <span>Transportation</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="energy">
+                            <span>Energy</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="media">
+                            <span>Media</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="telecommunications">
+                            <span>Telecom</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="construction">
+                            <span>Construction</span>
+                        </label>
+                        <label class="interest-chip">
+                            <input type="checkbox" name="interests" value="agriculture">
+                            <span>Agriculture</span>
+                        </label>
+                        <label class="interest-chip featured">
+                            <input type="checkbox" name="interests" value="all" checked>
+                            <span>All Industries</span>
+                        </label>
+                    </div>
+
+                    <div class="newsletter-input-group">
+                        <input
+                            type="email"
+                            id="newsletter-email"
+                            name="email"
+                            placeholder="your@email.com"
+                            required
+                            class="newsletter-input"
+                            aria-label="Email address"
+                        >
+                        <button type="submit" class="newsletter-btn">Subscribe</button>
+                    </div>
+                </form>
+
+                <p id="newsletter-message" class="newsletter-message"></p>
+                <p class="newsletter-note">Join 500+ professionals. Unsubscribe anytime.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p style="margin-bottom: var(--space-md);">
+                    <a href="/submit.html" style="color: #8B5CF6; text-decoration: none; font-weight: 600;">
+                        + Create Your Event - It's Free
+                    </a>
+                </p>
+                <p>&copy; 2025 Conferix. All rights reserved.</p>
+                <p class="footer-note">Curated weekly for UAE business professionals</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Event Detail Modal (Single Reusable Modal) -->
+    <div class="event-modal" id="event-modal">
+        <div class="modal-overlay" onclick="closeEventModal()"></div>
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeEventModal()" aria-label="Close modal">&times;</button>
+            <div class="modal-body" id="modal-body">
+                <!-- Event details injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="login-modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeLoginModal()"></div>
+        <div class="modal-sheet modal-small" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeLoginModal()" aria-label="Close">&times;</button>
+
+            <div class="modal-body">
+                <h2>Quick Login (Optional)</h2>
+                <p class="modal-subtitle">Save events and get personalized recommendations</p>
+
+                <form id="login-form" onsubmit="handleLoginSubmit(event)">
+                    <input
+                        type="text"
+                        id="login-name"
+                        name="first_name"
+                        placeholder="Your name"
+                        required
+                        class="input-field"
+                        aria-label="Your name"
+                    >
+
+                    <input
+                        type="email"
+                        id="login-email"
+                        name="email"
+                        placeholder="Your email address"
+                        required
+                        class="input-field"
+                        aria-label="Email address"
+                    >
+
+                    <button type="submit" class="btn-primary btn-full">Continue to Event</button>
+
+                    <button type="button" id="skip-login" class="btn-text btn-full">
+                        Skip - Continue Browsing →
+                    </button>
+                </form>
+
+                <p id="login-message" class="message"></p>
+
+                <p class="privacy-note">
+                    We'll save your preferences. No spam, unsubscribe anytime.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/eventCards.js"></script>
+    <script src="/js/filters.js"></script>
+    <script src="/js/modal.js"></script>
+    <script src="/js/login.js"></script>
+    <script src="/js/newsletter.js"></script>
+    <script src="/js/app.js"></script>
+
+</body>
+</html>
