@@ -1,5 +1,5 @@
 module.exports = {
-  webhookUrl: process.env.WEBHOOK_URL || 'https://conferix.com/.netlify/functions/receive-events',
+  webhookUrl: process.env.WEBHOOK_URL || 'https://YOUR-USA-SITE.netlify.app/.netlify/functions/receive-events',
 
   browser: {
     headless: true,
@@ -14,41 +14,40 @@ module.exports = {
 
   scrapers: {
     eventbrite: { enabled: true },
-    difc:      { enabled: true },
-    adgm:      { enabled: true },
-    meetup:    { enabled: true },
-    dwtc:      { enabled: true },
-    adnec:     { enabled: true },
+    meetup:     { enabled: true },
+    luma:       { enabled: true },
   },
 
+  // Target cities
+  cities: [
+    'Austin',
+    'San Francisco',
+    'New York',
+  ],
+
   validCities: [
-    'Dubai',
-    'Abu Dhabi',
-    'Sharjah',
-    'Ajman',
-    'Ras Al Khaimah',
-    'Fujairah',
-    'Umm Al Quwain',
+    'Austin',
+    'San Francisco',
+    'San Jose',
+    'Oakland',
+    'New York',
+    'Brooklyn',
+    'Manhattan',
+    'Los Angeles',
+    'Miami',
+    'Chicago',
+    'Seattle',
+    'Denver',
+    'Boston',
+    'Washington DC',
   ],
 
   validIndustries: [
     'Technology',
-    'Finance',
-    'Healthcare',
-    'Real Estate',
-    'Energy',
-    'Education',
-    'Marketing',
-    'Legal',
-    'HR',
-    'Logistics',
-    'Hospitality',
-    'Retail',
-    'Media',
-    'Government',
-    'Sustainability',
-    'Startup',
     'AI',
+    'Startup',
+    'Finance',
+    'Marketing',
     'General',
   ],
 };

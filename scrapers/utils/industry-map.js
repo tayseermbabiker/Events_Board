@@ -1,21 +1,9 @@
 const KEYWORDS = {
-  Technology:     ['tech', 'software', 'developer', 'devops', 'cloud', 'cyber', 'iot', 'blockchain', 'saas', 'digital transformation', 'computing'],
-  AI:             ['artificial intelligence', ' ai ', 'machine learning', 'deep learning', 'llm', 'generative ai', 'chatgpt', 'data science'],
-  Finance:        ['finance', 'fintech', 'banking', 'investment', 'wealth', 'capital', 'trading', 'insurance', 'fund', 'asset management'],
-  Healthcare:     ['health', 'medical', 'pharma', 'biotech', 'wellness', 'hospital', 'clinical'],
-  'Real Estate':  ['real estate', 'property', 'construction', 'architecture', 'building', 'housing'],
-  Energy:         ['energy', 'oil', 'gas', 'solar', 'renewable', 'petroleum', 'power', 'utilities'],
-  Education:      ['education', 'university', 'school', 'training', 'learning', 'academic', 'edtech'],
-  Marketing:      ['marketing', 'advertising', 'brand', 'social media', 'seo', 'content', 'pr ', 'public relations', 'communications'],
-  Legal:          ['legal', 'law ', 'compliance', 'regulation', 'governance', 'attorney'],
-  HR:             ['human resources', ' hr ', 'recruitment', 'talent', 'workforce', 'employee', 'hiring'],
-  Logistics:      ['logistics', 'supply chain', 'shipping', 'freight', 'transport', 'warehouse', 'trade'],
-  Hospitality:    ['hospitality', 'hotel', 'tourism', 'travel', 'food', 'restaurant', 'f&b', 'catering'],
-  Retail:         ['retail', 'ecommerce', 'e-commerce', 'consumer', 'shopping', 'fashion'],
-  Media:          ['media', 'film', 'broadcast', 'publishing', 'journalism', 'entertainment', 'gaming'],
-  Government:     ['government', 'public sector', 'policy', 'civic', 'municipality', 'federal'],
-  Sustainability: ['sustainability', 'esg', 'green', 'climate', 'carbon', 'environment', 'circular economy'],
-  Startup:        ['startup', 'start-up', 'venture', 'entrepreneurship', 'incubator', 'accelerator', 'founder'],
+  Technology: ['tech', 'software', 'developer', 'devops', 'cloud', 'cyber', 'iot', 'blockchain', 'saas', 'digital transformation', 'computing', 'web3', 'engineering', 'code', 'programming', 'hackathon', 'open source'],
+  AI:         ['artificial intelligence', ' ai ', 'machine learning', 'deep learning', 'llm', 'generative ai', 'chatgpt', 'data science', 'neural', 'nlp', 'computer vision', 'prompt engineering', 'langchain', 'rag '],
+  Startup:    ['startup', 'start-up', 'venture', 'entrepreneurship', 'incubator', 'accelerator', 'founder', 'pitch', 'demo day', 'seed', 'series a', 'bootstrapp', 'yc ', 'y combinator', 'indie hacker'],
+  Finance:    ['finance', 'fintech', 'banking', 'investment', 'wealth', 'capital', 'trading', 'insurance', 'fund', 'asset management', 'crypto', 'defi', 'payments', 'lending', 'wall street'],
+  Marketing:  ['marketing', 'advertising', 'brand', 'social media', 'seo', 'content', 'pr ', 'public relations', 'growth', 'demand gen', 'b2b marketing', 'product marketing', 'copywriting', 'analytics'],
 };
 
 /**

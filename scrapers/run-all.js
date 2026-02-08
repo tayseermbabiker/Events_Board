@@ -3,19 +3,13 @@ const logger = require('./utils/logger');
 
 // Import all scrapers
 const EventbriteScraper = require('./sites/eventbrite');
-const DifcScraper = require('./sites/difc');
-const AdgmScraper = require('./sites/adgm');
 const MeetupScraper = require('./sites/meetup');
-const DwtcScraper = require('./sites/dwtc');
-const AdnecScraper = require('./sites/adnec');
+const LumaScraper = require('./sites/luma');
 
 const ALL_SCRAPERS = [
   { key: 'eventbrite', Cls: EventbriteScraper },
-  { key: 'dwtc',       Cls: DwtcScraper },
-  { key: 'adnec',      Cls: AdnecScraper },
-  { key: 'difc',       Cls: DifcScraper },
-  { key: 'adgm',       Cls: AdgmScraper },
   { key: 'meetup',     Cls: MeetupScraper },
+  { key: 'luma',       Cls: LumaScraper },
 ];
 
 async function postBatch(events) {
@@ -44,7 +38,7 @@ async function sleep(ms) {
 
 async function main() {
   const startTime = Date.now();
-  logger.info('Runner', '=== Scrape run started ===');
+  logger.info('Runner', '=== USA Scrape run started ===');
 
   const allEvents = [];
   const summary = {};
@@ -108,7 +102,7 @@ function printSummary(summary, startTime) {
     logger.info('Runner', `  ${key}: ${val.status} (${val.count} events)`);
   }
   logger.info('Runner', `Total time: ${elapsed}s`);
-  logger.info('Runner', '=== Scrape run complete ===');
+  logger.info('Runner', '=== USA Scrape run complete ===');
   logger.close();
 }
 

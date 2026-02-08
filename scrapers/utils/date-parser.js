@@ -8,25 +8,25 @@ function parseDate(raw) {
   let str = String(raw).trim();
   if (!str) return null;
 
-  // Strip IANA timezone suffix e.g. [Asia/Dubai] from Meetup datetime attrs
+  // Strip IANA timezone suffix e.g. [America/New_York]
   str = str.replace(/\[.*?\]$/, '').trim();
 
-  // Already ISO 8601 (with optional timezone offset like +04:00)
+  // Already ISO 8601 (with optional timezone offset)
   if (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?/.test(str)) {
     const d = new Date(str);
     return isNaN(d) ? null : d.toISOString();
   }
 
-  // Try native Date parsing (handles "Jan 15, 2025", "15 January 2025", etc.)
+  // Try native Date parsing
   const d = new Date(str);
   if (!isNaN(d) && d.getFullYear() > 2000) {
     return d.toISOString();
   }
 
-  // dd/mm/yyyy or dd-mm-yyyy
-  const dmy = str.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
-  if (dmy) {
-    const d2 = new Date(`${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`);
+  // mm/dd/yyyy (US format)
+  const mdy = str.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
+  if (mdy) {
+    const d2 = new Date(`${mdy[3]}-${mdy[1].padStart(2, '0')}-${mdy[2].padStart(2, '0')}`);
     return isNaN(d2) ? null : d2.toISOString();
   }
 

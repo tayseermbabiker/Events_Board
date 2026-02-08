@@ -1,9 +1,16 @@
 const BaseScraper = require('../base-scraper');
+const config = require('../config');
 const logger = require('../utils/logger');
 const { classifyIndustry } = require('../utils/industry-map');
 
-const SEARCH_URL = 'https://www.meetup.com/find/?location=ae--dubai&source=EVENTS&categoryId=546';
 const MAX_SCROLLS = 10;
+
+// Meetup search URLs per city (categoryId 546 = Science & Tech)
+const CITY_SEARCHES = [
+  { city: 'Austin',        url: 'https://www.meetup.com/find/?location=us--tx--austin&source=EVENTS&categoryId=546' },
+  { city: 'San Francisco', url: 'https://www.meetup.com/find/?location=us--ca--san-francisco&source=EVENTS&categoryId=546' },
+  { city: 'New York',      url: 'https://www.meetup.com/find/?location=us--ny--new-york&source=EVENTS&categoryId=546' },
+];
 
 class MeetupScraper extends BaseScraper {
   constructor() {
@@ -11,56 +18,67 @@ class MeetupScraper extends BaseScraper {
   }
 
   async scrape() {
-    logger.info(this.name, `Fetching: ${SEARCH_URL}`);
-    await this.page.goto(SEARCH_URL, { waitUntil: 'domcontentloaded' });
-    await this.page.waitForTimeout(3000);
+    const allEvents = [];
 
-    // Try Apollo state first
-    let events = await this.extractFromApollo();
-    if (events.length > 0) {
-      logger.info(this.name, `Got ${events.length} events from Apollo state`);
-    }
+    for (const { city, url } of CITY_SEARCHES) {
+      logger.info(this.name, `--- Scraping ${city} ---`);
+      logger.info(this.name, `Fetching: ${url}`);
 
-    // Scroll to load more events
-    let prevCount = events.length;
-    for (let i = 0; i < MAX_SCROLLS; i++) {
-      await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await this.page.waitForTimeout(2000);
+      try {
+        await this.page.goto(url, { waitUntil: 'domcontentloaded' });
+        await this.page.waitForTimeout(3000);
 
-      const moreEvents = await this.extractFromApollo();
-      if (moreEvents.length > prevCount) {
-        events = moreEvents;
-        prevCount = events.length;
-        logger.info(this.name, `Scroll ${i + 1}: total ${events.length} events`);
-      } else {
-        // Also try "Show more" button
-        const showMore = await this.page.$('button:has-text("Show more"), button:has-text("Load more")');
-        if (showMore) {
-          try {
-            await showMore.click();
-            await this.page.waitForTimeout(2000);
-            const afterClick = await this.extractFromApollo();
-            if (afterClick.length > prevCount) {
-              events = afterClick;
-              prevCount = events.length;
-              continue;
-            }
-          } catch { /* button click failed */ }
+        // Try Apollo state first
+        let events = await this.extractFromApollo(city);
+        if (events.length > 0) {
+          logger.info(this.name, `Got ${events.length} events from Apollo state`);
         }
-        break;
+
+        // Scroll to load more events
+        let prevCount = events.length;
+        for (let i = 0; i < MAX_SCROLLS; i++) {
+          await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+          await this.page.waitForTimeout(2000);
+
+          const moreEvents = await this.extractFromApollo(city);
+          if (moreEvents.length > prevCount) {
+            events = moreEvents;
+            prevCount = events.length;
+            logger.info(this.name, `Scroll ${i + 1}: total ${events.length} events`);
+          } else {
+            const showMore = await this.page.$('button:has-text("Show more"), button:has-text("Load more")');
+            if (showMore) {
+              try {
+                await showMore.click();
+                await this.page.waitForTimeout(2000);
+                const afterClick = await this.extractFromApollo(city);
+                if (afterClick.length > prevCount) {
+                  events = afterClick;
+                  prevCount = events.length;
+                  continue;
+                }
+              } catch { /* button click failed */ }
+            }
+            break;
+          }
+        }
+
+        // If Apollo didn't work, fall back to DOM
+        if (events.length === 0) {
+          events = await this.extractFromDom(city);
+          logger.info(this.name, `Got ${events.length} events from DOM`);
+        }
+
+        allEvents.push(...events);
+      } catch (err) {
+        logger.warn(this.name, `${city} failed: ${err.message}`);
       }
     }
 
-    // If Apollo didn't work, fall back to DOM
-    if (events.length === 0) {
-      events = await this.extractFromDom();
-      logger.info(this.name, `Got ${events.length} events from DOM`);
-    }
-
-    return events;
+    return allEvents;
   }
 
-  async extractFromApollo() {
+  async extractFromApollo(defaultCity) {
     try {
       const apolloState = await this.page.evaluate(() => {
         return window.__APOLLO_STATE__ || null;
@@ -71,7 +89,7 @@ class MeetupScraper extends BaseScraper {
       const events = [];
       for (const [key, value] of Object.entries(apolloState)) {
         if (key.startsWith('Event:') && value.title) {
-          events.push(this.mapApolloEvent(value));
+          events.push(this.mapApolloEvent(value, defaultCity));
         }
       }
 
@@ -81,7 +99,7 @@ class MeetupScraper extends BaseScraper {
     }
   }
 
-  mapApolloEvent(ev) {
+  mapApolloEvent(ev, defaultCity) {
     const title = ev.title;
     if (!title) return null;
 
@@ -89,7 +107,7 @@ class MeetupScraper extends BaseScraper {
     const group = typeof ev.group === 'object' ? ev.group : {};
     const venue = typeof ev.venue === 'object' ? ev.venue : {};
 
-    const city = this.detectCity(venue.city || group.city || '');
+    const city = this.detectCity(venue.city || group.city || '') || defaultCity;
 
     return {
       title,
@@ -109,7 +127,7 @@ class MeetupScraper extends BaseScraper {
     };
   }
 
-  async extractFromDom() {
+  async extractFromDom(defaultCity) {
     const cards = await this.page.$$('[data-testid="categoryResults-eventCard"]');
     const events = [];
     const seen = new Set();
@@ -119,12 +137,11 @@ class MeetupScraper extends BaseScraper {
         const title = await card.$eval('h2, h3', el => el.textContent.trim()).catch(() => null);
         const link = await card.$eval('a[href*="/events/"]', el => el.href).catch(() => null);
         const dateText = await card.$eval('time[datetime]', el => el.getAttribute('datetime')).catch(() => null);
-        // Extract group name from URL: meetup.com/GROUP-NAME/events/ID
         const groupSlug = link ? link.match(/meetup\.com\/([^/]+)\/events/)?.[1] : null;
         const groupName = groupSlug ? groupSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : null;
         const img = await card.$eval('img[alt]', el => el.src).catch(() => null);
         const locationText = await card.$$eval('p', els => {
-          const loc = els.find(el => el.textContent.includes('Dubai') || el.textContent.includes('Abu Dhabi') || el.textContent.includes('Online'));
+          const loc = els.find(el => /austin|san francisco|new york|brooklyn|manhattan|online/i.test(el.textContent));
           return loc ? loc.textContent.trim() : '';
         }).catch(() => '');
 
@@ -138,10 +155,10 @@ class MeetupScraper extends BaseScraper {
             end_date: null,
             venue_name: null,
             venue_address: null,
-            city: this.detectCity(locationText),
+            city: this.detectCity(locationText) || defaultCity,
             organizer: groupName,
             industry: classifyIndustry(title),
-            is_free: true, // Most Meetup events are free — cards don't show pricing
+            is_free: true,
             registration_url: link,
             image_url: img,
             source: 'Meetup',
@@ -156,13 +173,20 @@ class MeetupScraper extends BaseScraper {
 
   detectCity(text) {
     const lower = (text || '').toLowerCase();
-    if (lower.includes('abu dhabi')) return 'Abu Dhabi';
-    if (lower.includes('sharjah')) return 'Sharjah';
-    if (lower.includes('ajman')) return 'Ajman';
-    if (lower.includes('ras al khaim')) return 'Ras Al Khaimah';
-    if (lower.includes('fujairah')) return 'Fujairah';
-    if (lower.includes('umm al quwain')) return 'Umm Al Quwain';
-    return 'Dubai';
+    if (lower.includes('austin')) return 'Austin';
+    if (lower.includes('san francisco')) return 'San Francisco';
+    if (lower.includes('san jose')) return 'San Jose';
+    if (lower.includes('oakland')) return 'Oakland';
+    if (lower.includes('new york') || lower.includes('nyc') || lower.includes('manhattan')) return 'New York';
+    if (lower.includes('brooklyn')) return 'Brooklyn';
+    if (lower.includes('los angeles')) return 'Los Angeles';
+    if (lower.includes('miami')) return 'Miami';
+    if (lower.includes('chicago')) return 'Chicago';
+    if (lower.includes('seattle')) return 'Seattle';
+    if (lower.includes('denver')) return 'Denver';
+    if (lower.includes('boston')) return 'Boston';
+    if (lower.includes('washington')) return 'Washington DC';
+    return null;
   }
 }
 
