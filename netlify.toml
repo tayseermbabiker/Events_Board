@@ -1,0 +1,58 @@
+# Netlify Configuration File
+
+[build]
+  command = "echo 'Static site - no build needed'"
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Environment variables (set these in Netlify dashboard)
+# AIRTABLE_API_KEY = your_airtable_api_key
+# AIRTABLE_BASE_ID = your_airtable_base_id
+
+# Redirects and rewrites (specific routes MUST come before wildcards)
+
+# JSON API for AI crawlers
+[[redirects]]
+  from = "/api/events.json"
+  to = "/.netlify/functions/events-json"
+  status = 200
+
+# Server-rendered events list for AI crawlers
+[[redirects]]
+  from = "/events-list"
+  to = "/.netlify/functions/events-list"
+  status = 200
+
+# Generic API wildcard (must be LAST)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache static assets
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
