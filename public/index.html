@@ -13,7 +13,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Discover UAE's best professional events, conferences, and networking opportunities. All emirates, all industries.">
-    <meta name="theme-color" content="#8B5CF6">
+    <meta name="theme-color" content="#0B1426">
     <title>Conferix | UAE Professional Events, Conferences & Networking</title>
 
     <!-- SEO Meta Tags -->
@@ -68,7 +68,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/css/reset.css">
@@ -83,17 +83,26 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1>Conferix</h1>
+                    <h1>Conferix <span class="logo-region">UAE</span></h1>
                     <p class="tagline">Professional Events, Curated</p>
                 </div>
                 <div class="header-actions">
                     <a href="/faq.html" class="btn-faq">FAQ</a>
                     <a href="/submit.html" class="btn-create">+ Create Event</a>
-                    <button id="login-btn" class="btn-login">Login</button>
+                    <button id="login-btn" class="btn-login">Sign Up</button>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h2 class="hero-headline">UAE Professional Events</h2>
+            <p class="hero-subtitle">Conferences, meetups & networking across all emirates</p>
+            <button class="hero-cta" onclick="openLoginModal()">Get Personalized Alerts</button>
+        </div>
+    </section>
 
     <!-- Filters Section (Sticky) -->
     <section class="filters-section" id="filters">
@@ -112,24 +121,15 @@
                         All Industries ▾
                     </button>
                     <div class="multi-select-dropdown" id="industry-dropdown">
-                        <label><input type="checkbox" value="Technology"> Technology</label>
+                        <label><input type="checkbox" value="Tech & AI"> Tech & AI</label>
                         <label><input type="checkbox" value="Finance"> Finance</label>
-                        <label><input type="checkbox" value="Marketing"> Marketing</label>
-                        <label><input type="checkbox" value="Healthcare"> Healthcare</label>
-                        <label><input type="checkbox" value="Real Estate"> Real Estate</label>
-                        <label><input type="checkbox" value="Education"> Education</label>
-                        <label><input type="checkbox" value="Government"> Government</label>
                         <label><input type="checkbox" value="Legal"> Legal</label>
-                        <label><input type="checkbox" value="Hospitality"> Hospitality</label>
-                        <label><input type="checkbox" value="Food & Beverage"> Food & Beverage</label>
-                        <label><input type="checkbox" value="Manufacturing"> Manufacturing</label>
-                        <label><input type="checkbox" value="Retail"> Retail</label>
-                        <label><input type="checkbox" value="Transportation"> Transportation</label>
-                        <label><input type="checkbox" value="Energy"> Energy</label>
-                        <label><input type="checkbox" value="Media"> Media</label>
-                        <label><input type="checkbox" value="Telecommunications"> Telecom</label>
-                        <label><input type="checkbox" value="Construction"> Construction</label>
-                        <label><input type="checkbox" value="Agriculture"> Agriculture</label>
+                        <label><input type="checkbox" value="Healthcare"> Healthcare</label>
+                        <label><input type="checkbox" value="Real Estate & Construction"> Real Estate & Construction</label>
+                        <label><input type="checkbox" value="Hospitality & F&B"> Hospitality & F&B</label>
+                        <label><input type="checkbox" value="Energy & Government"> Energy & Government</label>
+                        <label><input type="checkbox" value="Startups"> Startups</label>
+                        <label><input type="checkbox" value="General"> General</label>
                     </div>
                 </div>
 
@@ -189,91 +189,94 @@
         </div>
     </main>
 
-    <!-- Newsletter Signup Section -->
+    <!-- Newsletter / Alert Signup Section -->
     <section class="newsletter-section" id="newsletter">
         <div class="container">
             <div class="newsletter-box">
-                <h2>Never Miss a Professional Event</h2>
-                <p>Get UAE events in your inbox every Monday. Select your interests:</p>
+                <h2>Get Personalized Event Alerts</h2>
+                <p>Choose your emirates and industries. We'll email you new events every Monday.</p>
 
                 <form id="newsletter-form" class="newsletter-form">
-                    <div class="newsletter-interests">
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="technology">
-                            <span>Technology</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="finance">
-                            <span>Finance</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="marketing">
-                            <span>Marketing</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="healthcare">
-                            <span>Healthcare</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="realestate">
-                            <span>Real Estate</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="education">
-                            <span>Education</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="government">
-                            <span>Government</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="legal">
-                            <span>Legal</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="hospitality">
-                            <span>Hospitality</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="foodbeverage">
-                            <span>Food & Beverage</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="manufacturing">
-                            <span>Manufacturing</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="retail">
-                            <span>Retail</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="transportation">
-                            <span>Transportation</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="energy">
-                            <span>Energy</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="media">
-                            <span>Media</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="telecommunications">
-                            <span>Telecom</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="construction">
-                            <span>Construction</span>
-                        </label>
-                        <label class="interest-chip">
-                            <input type="checkbox" name="interests" value="agriculture">
-                            <span>Agriculture</span>
-                        </label>
-                        <label class="interest-chip featured">
-                            <input type="checkbox" name="interests" value="all" checked>
-                            <span>All Industries</span>
-                        </label>
+                    <!-- Emirates chips -->
+                    <div class="newsletter-chip-section">
+                        <p class="chip-section-label">Emirates you care about</p>
+                        <div class="newsletter-interests" id="nl-emirates-group">
+                            <label class="interest-chip featured">
+                                <input type="checkbox" name="nl-emirate" value="" checked>
+                                <span>All Emirates</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-emirate" value="Dubai">
+                                <span>Dubai</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-emirate" value="Abu Dhabi">
+                                <span>Abu Dhabi</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-emirate" value="Sharjah">
+                                <span>Sharjah</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-emirate" value="Ajman">
+                                <span>Ajman</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-emirate" value="Ras Al Khaimah">
+                                <span>RAK</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-emirate" value="Fujairah">
+                                <span>Fujairah</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-emirate" value="Umm Al Quwain">
+                                <span>UAQ</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Industry chips -->
+                    <div class="newsletter-chip-section">
+                        <p class="chip-section-label">Industries you follow</p>
+                        <div class="newsletter-interests" id="nl-industry-group">
+                            <label class="interest-chip featured">
+                                <input type="checkbox" name="nl-industry" value="" checked>
+                                <span>All Industries</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-industry" value="Tech & AI">
+                                <span>Tech & AI</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-industry" value="Finance">
+                                <span>Finance</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-industry" value="Legal">
+                                <span>Legal</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-industry" value="Healthcare">
+                                <span>Healthcare</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-industry" value="Real Estate & Construction">
+                                <span>Real Estate</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-industry" value="Hospitality & F&B">
+                                <span>Hospitality</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-industry" value="Energy & Government">
+                                <span>Energy & Gov</span>
+                            </label>
+                            <label class="interest-chip">
+                                <input type="checkbox" name="nl-industry" value="Startups">
+                                <span>Startups</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="newsletter-input-group">
@@ -286,12 +289,12 @@
                             class="newsletter-input"
                             aria-label="Email address"
                         >
-                        <button type="submit" class="newsletter-btn">Subscribe</button>
+                        <button type="submit" class="newsletter-btn">Get My Alerts</button>
                     </div>
                 </form>
 
                 <p id="newsletter-message" class="newsletter-message"></p>
-                <p class="newsletter-note">Join 500+ professionals. Unsubscribe anytime.</p>
+                <p class="newsletter-note">Weekly alerts, personalized to you. Unsubscribe anytime.</p>
             </div>
         </div>
     </section>
@@ -301,11 +304,11 @@
         <div class="container">
             <div class="footer-content">
                 <p style="margin-bottom: var(--space-md);">
-                    <a href="/submit.html" style="color: #8B5CF6; text-decoration: none; font-weight: 600;">
+                    <a href="/submit.html" style="color: var(--accent-gold); text-decoration: none; font-weight: 600;">
                         + Create Your Event - It's Free
                     </a>
                 </p>
-                <p>&copy; 2025 Conferix. All rights reserved.</p>
+                <p>&copy; 2026 Conferix. All rights reserved.</p>
                 <p class="footer-note">Curated weekly for UAE business professionals</p>
             </div>
         </div>
@@ -322,41 +325,55 @@
         </div>
     </div>
 
-    <!-- Login Modal -->
+    <!-- Login / Sign Up Modal -->
     <div class="login-modal" id="login-modal" style="display: none;">
         <div class="modal-overlay" onclick="closeLoginModal()"></div>
         <div class="modal-sheet modal-small" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeLoginModal()" aria-label="Close">&times;</button>
 
             <div class="modal-body">
-                <h2>Quick Login (Optional)</h2>
-                <p class="modal-subtitle">Save events and get personalized recommendations</p>
+                <h2 style="margin-bottom:var(--space-sm);color:var(--navy-dark);font-family:var(--font-serif);font-weight:400;">Join Conferix</h2>
+                <p class="modal-subtitle">Get personalized event alerts for your emirate and industry, every Monday.</p>
 
                 <form id="login-form" onsubmit="handleLoginSubmit(event)">
-                    <input
-                        type="text"
-                        id="login-name"
-                        name="first_name"
-                        placeholder="Your name"
-                        required
-                        class="input-field"
-                        aria-label="Your name"
-                    >
+                    <input type="text" id="login-name" name="first_name" placeholder="Your name" required class="input-field" aria-label="Your name">
+                    <input type="email" id="login-email" name="email" placeholder="Your email address" required class="input-field" aria-label="Email address">
 
-                    <input
-                        type="email"
-                        id="login-email"
-                        name="email"
-                        placeholder="Your email address"
-                        required
-                        class="input-field"
-                        aria-label="Email address"
-                    >
+                    <!-- Emirates preference chips -->
+                    <div class="alert-prefs-group" id="modal-emirate-prefs">
+                        <p class="prefs-label">Emirates you care about</p>
+                        <div class="chip-grid">
+                            <label class="pref-chip"><input type="checkbox" name="modal-emirate" value="" checked><span>All Emirates</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-emirate" value="Dubai"><span>Dubai</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-emirate" value="Abu Dhabi"><span>Abu Dhabi</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-emirate" value="Sharjah"><span>Sharjah</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-emirate" value="Ajman"><span>Ajman</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-emirate" value="Ras Al Khaimah"><span>RAK</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-emirate" value="Fujairah"><span>Fujairah</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-emirate" value="Umm Al Quwain"><span>UAQ</span></label>
+                        </div>
+                    </div>
 
-                    <button type="submit" class="btn-primary btn-full">Continue to Event</button>
+                    <!-- Industry preference chips -->
+                    <div class="alert-prefs-group" id="modal-industry-prefs">
+                        <p class="prefs-label">Industries you follow</p>
+                        <div class="chip-grid">
+                            <label class="pref-chip"><input type="checkbox" name="modal-industry" value="" checked><span>All Industries</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-industry" value="Tech & AI"><span>Tech & AI</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-industry" value="Finance"><span>Finance</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-industry" value="Legal"><span>Legal</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-industry" value="Healthcare"><span>Healthcare</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-industry" value="Real Estate & Construction"><span>Real Estate</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-industry" value="Hospitality & F&B"><span>Hospitality</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-industry" value="Energy & Government"><span>Energy & Gov</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="modal-industry" value="Startups"><span>Startups</span></label>
+                        </div>
+                    </div>
 
-                    <button type="button" id="skip-login" class="btn-text btn-full">
-                        Skip - Continue Browsing →
+                    <button type="submit" class="btn-primary btn-full">Get My Alerts</button>
+
+                    <button type="button" id="skip-login" class="btn-text btn-full" onclick="closeLoginModal()">
+                        Skip - Continue Browsing
                     </button>
                 </form>
 
@@ -374,8 +391,6 @@
     <script src="/js/eventCards.js"></script>
     <script src="/js/filters.js"></script>
     <script src="/js/modal.js"></script>
-    <script src="/js/login.js"></script>
-    <script src="/js/newsletter.js"></script>
     <script src="/js/app.js"></script>
 
 </body>

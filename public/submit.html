@@ -13,7 +13,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Submit your professional event to Conferix. Free listing for business conferences, networking events, and industry meetups in UAE.">
-    <meta name="theme-color" content="#8B5CF6">
+    <meta name="theme-color" content="#0B1426">
     <title>Submit Your Event | Conferix - UAE Professional Events</title>
 
     <!-- SEO Meta Tags -->
@@ -64,7 +64,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/css/reset.css">
@@ -79,16 +79,18 @@
         }
 
         .submit-header {
-            background: linear-gradient(135deg, #0f0a1e 0%, #1a1530 25%, #1e1b4b 50%, #1a1530 75%, #0f0a1e 100%);
+            background: linear-gradient(135deg, #0B1426 0%, #1C2333 25%, #1E3A5F 50%, #1C2333 75%, #0B1426 100%);
             color: var(--white);
             padding: var(--space-xl) 0;
             text-align: center;
         }
 
         .submit-header h1 {
+            font-family: var(--font-serif);
             font-size: var(--font-xxlarge);
+            font-weight: 400;
             margin-bottom: var(--space-sm);
-            background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 50%, #0EA5E9 100%);
+            background: linear-gradient(135deg, #FFFFFF 0%, #D4A853 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -156,8 +158,8 @@
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #8B5CF6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+            border-color: var(--primary-teal);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
         }
 
         .form-group textarea {
@@ -201,7 +203,7 @@
 
         .submit-btn {
             width: 100%;
-            background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--teal-dark) 100%);
             color: var(--white);
             border: none;
             padding: var(--space-md) var(--space-xl);
@@ -210,12 +212,12 @@
             font-weight: 600;
             cursor: pointer;
             transition: all var(--transition-base);
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.4);
         }
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+            box-shadow: 0 6px 20px rgba(30, 58, 95, 0.5);
         }
 
         .submit-btn:disabled {
@@ -246,8 +248,8 @@
         }
 
         .benefits {
-            background: rgba(139, 92, 246, 0.05);
-            border: 1px solid rgba(139, 92, 246, 0.2);
+            background: rgba(45, 212, 191, 0.05);
+            border: 1px solid rgba(45, 212, 191, 0.2);
             border-radius: var(--radius-md);
             padding: var(--space-lg);
             margin-bottom: var(--space-xl);
@@ -275,7 +277,7 @@
 
         .benefits li::before {
             content: "✓";
-            color: #8B5CF6;
+            color: var(--primary-teal);
             font-weight: bold;
         }
     </style>
@@ -307,7 +309,7 @@
 
             <div class="form-group">
                 <label>Event Title <span class="required">*</span></label>
-                <input type="text" name="title" required placeholder="e.g., Dubai FinTech Summit 2025">
+                <input type="text" name="title" required placeholder="e.g., Dubai FinTech Summit 2026">
             </div>
 
             <div class="form-group">
@@ -343,24 +345,15 @@
                 <label>Industry <span class="required">*</span></label>
                 <select name="industry" required>
                     <option value="">Select industry...</option>
-                    <option value="Technology">Technology</option>
+                    <option value="Tech & AI">Tech & AI</option>
                     <option value="Finance">Finance</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Real Estate">Real Estate</option>
-                    <option value="Education">Education</option>
-                    <option value="Government">Government</option>
                     <option value="Legal">Legal</option>
-                    <option value="Hospitality">Hospitality</option>
-                    <option value="Food & Beverage">Food & Beverage</option>
-                    <option value="Manufacturing">Manufacturing</option>
-                    <option value="Retail">Retail</option>
-                    <option value="Transportation">Transportation</option>
-                    <option value="Energy">Energy</option>
-                    <option value="Media">Media</option>
-                    <option value="Telecommunications">Telecommunications</option>
-                    <option value="Construction">Construction</option>
-                    <option value="Agriculture">Agriculture</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Real Estate & Construction">Real Estate & Construction</option>
+                    <option value="Hospitality & F&B">Hospitality & F&B</option>
+                    <option value="Energy & Government">Energy & Government</option>
+                    <option value="Startups">Startups</option>
+                    <option value="General">General</option>
                 </select>
             </div>
 

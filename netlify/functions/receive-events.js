@@ -63,6 +63,36 @@ exports.handler = async (event, context) => {
         // Strip time from dates — Airtable date fields reject ISO timestamps
         const toDate = (val) => val ? val.split('T')[0] : null;
 
+        // Map granular scraper industries to consolidated categories
+        const INDUSTRY_MAP = {
+          'technology': 'Tech & AI',
+          'ai': 'Tech & AI',
+          'telecom': 'Tech & AI',
+          'telecommunications': 'Tech & AI',
+          'startup': 'Startups',
+          'real estate': 'Real Estate & Construction',
+          'construction': 'Real Estate & Construction',
+          'hospitality': 'Hospitality & F&B',
+          'food & beverage': 'Hospitality & F&B',
+          'retail': 'Hospitality & F&B',
+          'energy': 'Energy & Government',
+          'government': 'Energy & Government',
+          'agriculture': 'Energy & Government',
+          'marketing': 'General',
+          'education': 'General',
+          'media': 'General',
+          'manufacturing': 'General',
+          'transportation': 'General',
+        };
+        const KEEP_AS_IS = ['finance', 'legal', 'healthcare', 'startups', 'general',
+          'tech & ai', 'real estate & construction', 'hospitality & f&b', 'energy & government'];
+        const mapIndustry = (raw) => {
+          if (!raw) return 'General';
+          const lower = raw.toLowerCase().trim();
+          if (KEEP_AS_IS.includes(lower)) return raw;
+          return INDUSTRY_MAP[lower] || 'General';
+        };
+
         // Prepare event record
         const eventRecord = {
           title: eventData.title,
@@ -73,7 +103,7 @@ exports.handler = async (event, context) => {
           venue_address: eventData.venue_address,
           city: eventData.city || 'Dubai',
           organizer: eventData.organizer,
-          industry: eventData.industry || 'General',
+          industry: mapIndustry(eventData.industry),
           is_free: eventData.is_free || false,
           registration_url: eventData.registration_url,
           image_url: eventData.image_url,

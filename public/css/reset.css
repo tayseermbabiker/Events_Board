@@ -52,6 +52,6 @@ ul, ol {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--uae-green);
+  outline: 2px solid var(--primary-teal);
   outline-offset: 2px;
 }

@@ -1,270 +1,242 @@
-// Modal System (Single Reusable Modal - Inspired by HalaUAE)
+// Modal System
 
-/**
- * Open event detail modal with dynamic content
- * @param {object} event - Event data object
- */
+function buildGoogleCalendarUrl(event) {
+  const title = encodeURIComponent(event.title || '');
+  const formatDate = (d) => d ? d.replace(/-/g, '') : '';
+  const start = formatDate(event.start_date);
+  const end = formatDate(event.end_date || event.start_date);
+  const endDate = end || start;
+  const nextDay = endDate ? String(Number(endDate) + 1) : '';
+  const location = encodeURIComponent(
+    [event.venue_name, event.city].filter(Boolean).join(', ')
+  );
+  const details = encodeURIComponent(
+    (event.description ? event.description.substring(0, 500) + '\n\n' : '') +
+    (event.registration_url ? 'Register: ' + event.registration_url : '')
+  );
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${nextDay}&location=${location}&details=${details}`;
+}
+
+function downloadICS(event) {
+  const formatDate = (d) => d ? d.replace(/-/g, '') : '';
+  const start = formatDate(event.start_date);
+  const end = formatDate(event.end_date || event.start_date);
+  const nextDay = end ? String(Number(end) + 1) : String(Number(start) + 1);
+  const location = [event.venue_name, event.city].filter(Boolean).join(', ');
+  const desc = (event.description || '').substring(0, 500).replace(/\n/g, '\\n');
+  const url = event.registration_url || '';
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Conferix//UAE//EN',
+    'BEGIN:VEVENT',
+    `DTSTART;VALUE=DATE:${start}`,
+    `DTEND;VALUE=DATE:${nextDay}`,
+    `SUMMARY:${event.title || ''}`,
+    `LOCATION:${location}`,
+    `DESCRIPTION:${desc}${url ? '\\nRegister: ' + url : ''}`,
+    `URL:${url}`,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = (event.title || 'event').replace(/[^a-z0-9]/gi, '_') + '.ics';
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
 function openEventModal(event) {
   const modal = document.getElementById('event-modal');
-  const modalBody = document.getElementById('modal-body');
+  const body = document.getElementById('modal-body');
+  if (!modal || !body) return;
 
-  if (!modal || !modalBody) {
-    console.error('Modal elements not found');
-    return;
-  }
-
-  // Build modal content dynamically
-  const content = buildEventModalContent(event);
-  modalBody.innerHTML = content;
-
-  // Show modal
+  body.innerHTML = buildEventModalContent(event);
   modal.classList.add('active');
-  document.body.style.overflow = 'hidden'; // Prevent background scroll
-
-  // Add escape key listener
+  document.body.style.overflow = 'hidden';
   document.addEventListener('keydown', handleEscapeKey);
 }
 
-/**
- * Close event modal
- */
 function closeEventModal() {
   const modal = document.getElementById('event-modal');
-
   if (modal) {
     modal.classList.remove('active');
-    document.body.style.overflow = ''; // Restore scroll
-
-    // Remove escape key listener
+    document.body.style.overflow = '';
     document.removeEventListener('keydown', handleEscapeKey);
   }
 }
 
-/**
- * Build event modal content HTML
- * @param {object} event - Event data object
- * @returns {string} HTML content
- */
 function buildEventModalContent(event) {
-  // Event image or gradient placeholder
   const imageHtml = event.image_url
     ? `<img src="${escapeHtml(event.image_url)}" alt="${escapeHtml(event.title)}" class="modal-image">`
     : `<div class="modal-image" style="background: ${getRandomGradient()};"></div>`;
 
-  // Format dates
   const startDate = formatFullDateTime(event.start_date);
-  const startTime = formatTime(event.start_date);
-  const endTime = event.end_date ? formatTime(event.end_date) : '';
+  const endDate = event.end_date && event.end_date !== event.start_date ? formatFullDateTime(event.end_date) : '';
 
-  // Build tags HTML
-  const tagsHtml = event.tags && event.tags.length > 0
-    ? `<div class="tags">${event.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div>`
-    : '';
+  const venueHtml = event.venue_name ? `
+    <div class="meta-block">
+      <strong>Venue</strong>
+      <p>${escapeHtml(event.venue_name)}</p>
+      ${event.venue_address ? `<p style="font-size:14px;color:var(--grey-dark);">${escapeHtml(event.venue_address)}</p>` : ''}
+    </div>` : '';
 
-  // Build venue info
-  const venueHtml = event.venue_name
-    ? `
-      <div class="meta-block">
-        <strong>📍 Venue</strong>
-        <p>${escapeHtml(event.venue_name)}</p>
-        ${event.venue_address ? `<p style="font-size: 14px; color: var(--grey-dark);">${escapeHtml(event.venue_address)}</p>` : ''}
-      </div>
-    `
-    : '';
+  const organizerHtml = event.organizer ? `
+    <div class="meta-block">
+      <strong>Organized by</strong>
+      <p>${escapeHtml(event.organizer)}</p>
+    </div>` : '';
 
-  // Build organizer info
-  const organizerHtml = event.organizer
-    ? `
-      <div class="meta-block">
-        <strong>👤 Organized by</strong>
-        <p>${escapeHtml(event.organizer)}</p>
-      </div>
-    `
-    : '';
+  const descriptionHtml = event.description ? `
+    <div class="description">
+      <strong>About this event</strong>
+      <p>${escapeHtml(event.description)}</p>
+    </div>` : '';
 
-  // Build description
-  const descriptionHtml = event.description
-    ? `
-      <div class="description">
-        <strong>About this event</strong>
-        <p>${escapeHtml(event.description)}</p>
-      </div>
-    `
-    : '';
-
-  // Build capacity info
-  const capacityHtml = event.capacity
-    ? `
-      <div class="meta-block">
-        <strong>👥 Capacity</strong>
-        <p>${event.capacity} attendees</p>
-      </div>
-    `
-    : '';
+  const regUrl = event.registration_url || '#';
 
   return `
     ${imageHtml}
-
-    <h2 style="margin-bottom: var(--space-md); color: var(--navy-dark);">
-      ${escapeHtml(event.title)}
-    </h2>
-
+    <h2 style="margin-bottom:var(--space-md);color:var(--navy-dark);font-family:var(--font-serif);font-weight:400;">${escapeHtml(event.title)}</h2>
     <p class="modal-subtitle">
-      ${event.is_free ? '<strong style="color: var(--success);">FREE EVENT</strong>' : '<strong style="color: var(--gold);">PAID EVENT</strong>'}
+      ${event.is_free ? '<strong style="color:var(--success);">FREE EVENT</strong>' : '<strong style="color:var(--gold);">PAID EVENT</strong>'}
+      ${event.source ? `&nbsp;&middot;&nbsp;<span style="color:var(--grey-dark);">via ${escapeHtml(event.source)}</span>` : ''}
     </p>
-
     <div class="modal-event-meta">
       <div class="meta-block">
-        <strong>📅 Date & Time</strong>
+        <strong>Date</strong>
         <p>${startDate}</p>
-        <p>${startTime}${endTime ? ' - ' + endTime : ''}</p>
+        ${endDate ? `<p>to ${endDate}</p>` : ''}
       </div>
-
+      <div class="meta-block">
+        <strong>Emirate</strong>
+        <p>${escapeHtml(event.city || 'UAE')}</p>
+      </div>
       ${venueHtml}
-
-      <div class="meta-block">
-        <strong>🏙️ City</strong>
-        <p>${escapeHtml(event.city || 'Dubai')}</p>
-      </div>
-
       ${organizerHtml}
-
-      ${capacityHtml}
-
       <div class="meta-block">
-        <strong>🏢 Industry</strong>
-        <p>${escapeHtml(event.industry || 'General')}</p>
-        ${tagsHtml}
+        <strong>Industry</strong>
+        <p style="color:${getIndustryColor(event.industry)};font-weight:600;">${escapeHtml(event.industry || 'General')}</p>
       </div>
     </div>
-
     ${descriptionHtml}
-
-    <button
-      class="btn-primary btn-full"
-      onclick="handleBooking('${event.id}', '${escapeHtml(event.registration_url)}')"
-      style="margin-top: var(--space-lg);"
-    >
+    <button class="btn-primary btn-full" onclick="window.open('${escapeHtml(regUrl)}','_blank','noopener,noreferrer')" style="margin-top:var(--space-lg);">
       ${event.is_free ? 'Register for Free' : 'Book Now'}
     </button>
-
-    <div class="share-buttons" style="margin-top: var(--space-lg); text-align: center;">
-      <p style="font-size: 14px; color: var(--grey-dark); margin-bottom: var(--space-sm);">Share this event</p>
-      <div style="display: flex; gap: var(--space-sm); justify-content: center; flex-wrap: wrap;">
-        <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(event.registration_url)}"
-           target="_blank" rel="noopener"
-           style="padding: 8px 16px; background: #0077B5; color: white; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">
-          LinkedIn
-        </a>
-        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(event.title + ' - ' + (event.city || 'UAE'))}&url=${encodeURIComponent(event.registration_url)}"
-           target="_blank" rel="noopener"
-           style="padding: 8px 16px; background: #1DA1F2; color: white; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">
-          Twitter
-        </a>
-        <a href="https://wa.me/?text=${encodeURIComponent(event.title + ' - Check out this event: ' + event.registration_url)}"
-           target="_blank" rel="noopener"
-           style="padding: 8px 16px; background: #25D366; color: white; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">
-          WhatsApp
-        </a>
+    <div class="cal-buttons" style="display:flex;gap:var(--space-sm);margin-top:var(--space-md);">
+      <a href="${buildGoogleCalendarUrl(event)}" target="_blank" rel="noopener" class="btn-cal">Google Calendar</a>
+      <button type="button" class="btn-cal" onclick='downloadICS(${JSON.stringify({title:event.title,start_date:event.start_date,end_date:event.end_date,venue_name:event.venue_name,city:event.city,description:event.description,registration_url:event.registration_url})})'>Outlook / Apple</button>
+    </div>
+    <div style="margin-top:var(--space-lg);text-align:center;">
+      <p style="font-size:14px;color:var(--grey-dark);margin-bottom:var(--space-sm);">Share this event</p>
+      <div style="display:flex;gap:var(--space-sm);justify-content:center;flex-wrap:wrap;">
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(regUrl)}" target="_blank" rel="noopener" style="padding:8px 16px;background:#0077B5;color:white;border-radius:6px;font-size:14px;font-weight:500;">LinkedIn</a>
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(event.title)}&url=${encodeURIComponent(regUrl)}" target="_blank" rel="noopener" style="padding:8px 16px;background:#1DA1F2;color:white;border-radius:6px;font-size:14px;font-weight:500;">Twitter</a>
+        <a href="https://wa.me/?text=${encodeURIComponent(event.title + ' - ' + regUrl)}" target="_blank" rel="noopener" style="padding:8px 16px;background:#25D366;color:white;border-radius:6px;font-size:14px;font-weight:500;">WhatsApp</a>
       </div>
     </div>
-
-    <p class="privacy-note" style="margin-top: var(--space-md);">
-      You'll be redirected to the event organizer's registration page
-    </p>
+    <p class="privacy-note" style="margin-top:var(--space-md);">You'll be redirected to the organizer's registration page</p>
   `;
 }
 
-/**
- * Open login modal
- */
 function openLoginModal() {
   const modal = document.getElementById('login-modal');
-  const modalBody = document.getElementById('login-modal-body');
-
-  if (!modal || !modalBody) {
-    console.error('Login modal elements not found');
-    return;
+  if (modal) {
+    modal.style.display = 'block';
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    setupChipToggle('modal-emirate-prefs', 'modal-emirate');
+    setupChipToggle('modal-industry-prefs', 'modal-industry');
   }
-
-  // Build login form
-  const content = buildLoginModalContent();
-  modalBody.innerHTML = content;
-
-  // Show modal
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-
-  // Add escape key listener
-  document.addEventListener('keydown', handleEscapeKey);
 }
 
-/**
- * Close login modal
- */
 function closeLoginModal() {
   const modal = document.getElementById('login-modal');
-
   if (modal) {
     modal.classList.remove('active');
+    modal.style.display = 'none';
     document.body.style.overflow = '';
-
-    // Remove escape key listener
-    document.removeEventListener('keydown', handleEscapeKey);
   }
 }
 
-/**
- * Build login modal content HTML
- * @returns {string} HTML content
- */
-function buildLoginModalContent() {
-  return `
-    <h2 style="margin-bottom: var(--space-sm); color: var(--navy-dark);">
-      Join UAE Events
-    </h2>
+// Chip toggle: selecting specific chips unchecks "All", unchecking all re-checks "All"
+function setupChipToggle(containerId, inputName) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
 
-    <p class="modal-subtitle">
-      Get personalized event recommendations and never miss an update
-    </p>
+  const checkboxes = container.querySelectorAll(`input[name="${inputName}"]`);
+  const allChip = container.querySelector(`input[name="${inputName}"][value=""]`);
 
-    <form id="login-form" onsubmit="handleLoginSubmit(event)">
-      <input
-        type="text"
-        id="login-name"
-        class="input-field"
-        placeholder="Your Name"
-        required
-        autocomplete="name"
-      />
-
-      <input
-        type="email"
-        id="login-email"
-        class="input-field"
-        placeholder="Your Email"
-        required
-        autocomplete="email"
-      />
-
-      <button type="submit" class="btn-primary btn-full">
-        Continue
-      </button>
-
-      <div id="login-message"></div>
-    </form>
-
-    <p class="privacy-note">
-      We respect your privacy. Your email will only be used for event updates.
-      No spam, unsubscribe anytime.
-    </p>
-  `;
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (cb === allChip) {
+        if (cb.checked) {
+          checkboxes.forEach(c => { if (c !== allChip) c.checked = false; });
+        } else {
+          cb.checked = true;
+        }
+      } else {
+        const anySpecific = Array.from(checkboxes).some(c => c !== allChip && c.checked);
+        if (anySpecific) {
+          allChip.checked = false;
+        } else {
+          allChip.checked = true;
+        }
+      }
+    });
+  });
 }
 
-/**
- * Handle escape key to close modals
- * @param {KeyboardEvent} e - Keyboard event
- */
+// Gather checked chip values as comma-separated string (empty = all)
+function getChipValues(inputName) {
+  const checkboxes = document.querySelectorAll(`input[name="${inputName}"]:checked`);
+  const values = Array.from(checkboxes).map(cb => cb.value).filter(v => v !== '');
+  return values.join(', ');
+}
+
+async function handleLoginSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById('login-name').value.trim();
+  const email = document.getElementById('login-email').value.trim();
+  const cities = getChipValues('modal-emirate');
+  const industries = getChipValues('modal-industry');
+  const msgEl = document.getElementById('login-message');
+
+  // Save locally
+  saveUser({ first_name: name, email: email });
+  const loginBtn = document.getElementById('login-btn');
+  if (loginBtn) loginBtn.textContent = 'Hi, ' + name;
+
+  // POST to subscribe endpoint
+  try {
+    const res = await fetch('/.netlify/functions/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, first_name: name, cities, industries }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (msgEl) {
+        msgEl.className = 'message success';
+        msgEl.textContent = data.message;
+      }
+      setTimeout(closeLoginModal, 1500);
+    } else {
+      throw new Error(data.error || 'Subscription failed');
+    }
+  } catch (err) {
+    console.warn('Subscribe API not available:', err.message);
+    if (msgEl) {
+      msgEl.className = 'message success';
+      msgEl.textContent = 'Welcome! Alerts will activate once deployed.';
+    }
+    setTimeout(closeLoginModal, 1500);
+  }
+}
+
 function handleEscapeKey(e) {
   if (e.key === 'Escape') {
     closeEventModal();
@@ -272,8 +244,17 @@ function handleEscapeKey(e) {
   }
 }
 
-// Export functions globally
-window.openEventModal = openEventModal;
-window.closeEventModal = closeEventModal;
-window.openLoginModal = openLoginModal;
-window.closeLoginModal = closeLoginModal;
+function getIndustryColor(industry) {
+  const colors = {
+    'Tech & AI': '#0EA5E9',
+    'Finance': '#10B981',
+    'Legal': '#8B5CF6',
+    'Healthcare': '#EF4444',
+    'Real Estate & Construction': '#F59E0B',
+    'Hospitality & F&B': '#EC4899',
+    'Energy & Government': '#6366F1',
+    'Startups': '#14B8A6',
+    'General': '#64748B',
+  };
+  return colors[industry] || '#64748B';
+}
