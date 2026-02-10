@@ -66,7 +66,7 @@ function buildWelcomeEmail(name, cities, industries, unsubToken) {
 async function sendWelcomeEmail(email, name, cities, industries, unsubToken) {
   try {
     await resend.emails.send({
-      from: 'Conferix UAE <onboarding@resend.dev>',
+      from: 'Conferix UAE <alerts@conferix.com>',
       to: email,
       subject: 'Welcome to Conferix UAE — You\'re In!',
       html: buildWelcomeEmail(name, cities, industries, unsubToken),
