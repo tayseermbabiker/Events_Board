@@ -9,10 +9,11 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const SITE_URL = process.env.SITE_URL || 'https://conferix.com/uae';
 const SUBSCRIBERS = base('Subscribers');
 
-function buildWelcomeEmail(name, cities, industries, unsubToken) {
+function buildWelcomeEmail(name, jobTitle, companyName, cities, industries, unsubToken) {
   const displayName = name || 'there';
   const cityText = cities || 'All Emirates';
   const industryText = industries || 'All Industries';
+  const profileLine = [jobTitle, companyName].filter(Boolean).join(' at ');
   const unsubUrl = `${SITE_URL}/unsubscribe.html?token=${unsubToken}`;
 
   const prefChips = (text, color) =>
@@ -33,7 +34,7 @@ function buildWelcomeEmail(name, cities, industries, unsubToken) {
         <!-- Body -->
         <tr><td style="background:#ffffff;padding:32px 24px;">
           <p style="margin:0 0 8px;font-size:22px;font-weight:600;color:#0B1426;">Welcome to Conferix!</p>
-          <p style="margin:0 0 24px;font-size:15px;color:#64748b;line-height:1.6;">Hey ${displayName}, you're all set! Every Monday, we'll send you new events matching:</p>
+          <p style="margin:0 0 24px;font-size:15px;color:#64748b;line-height:1.6;">Hey ${displayName}${profileLine ? ` (${profileLine})` : ''}, you're all set! Every Monday, we'll send you new events matching:</p>
 
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:24px;">
             <tr><td style="padding:20px;">
@@ -63,13 +64,13 @@ function buildWelcomeEmail(name, cities, industries, unsubToken) {
 </body></html>`;
 }
 
-async function sendWelcomeEmail(email, name, cities, industries, unsubToken) {
+async function sendWelcomeEmail(email, name, jobTitle, companyName, cities, industries, unsubToken) {
   try {
     await resend.emails.send({
       from: 'Conferix UAE <alerts@conferix.com>',
       to: email,
       subject: 'Welcome to Conferix UAE — You\'re In!',
-      html: buildWelcomeEmail(name, cities, industries, unsubToken),
+      html: buildWelcomeEmail(name, jobTitle, companyName, cities, industries, unsubToken),
     });
   } catch (err) {
     console.error('Welcome email failed:', err);
@@ -126,6 +127,8 @@ exports.handler = async (event) => {
     }
 
     const first_name = body.first_name;
+    const job_title = body.job_title || '';
+    const company = body.company || '';
     const cities = body.cities || 'All Emirates';
     const industries = body.industries || 'All Industries';
 
@@ -139,13 +142,15 @@ exports.handler = async (event) => {
     if (existing.length > 0) {
       await SUBSCRIBERS.update(existing[0].id, {
         first_name: first_name || existing[0].get('first_name') || '',
+        job_title: job_title || existing[0].get('job_title') || '',
+        company: company || existing[0].get('company') || '',
         cities: cities,
         industries: industries,
         is_active: true,
       });
 
       const token = existing[0].get('unsubscribe_token');
-      await sendWelcomeEmail(email, first_name || existing[0].get('first_name'), cities, industries, token);
+      await sendWelcomeEmail(email, first_name || existing[0].get('first_name'), job_title || existing[0].get('job_title'), company || existing[0].get('company'), cities, industries, token);
 
       return {
         statusCode: 200,
@@ -158,6 +163,8 @@ exports.handler = async (event) => {
     await SUBSCRIBERS.create({
       email,
       first_name: first_name || '',
+      job_title: job_title,
+      company: company,
       cities: cities,
       industries: industries,
       is_active: true,
@@ -165,7 +172,7 @@ exports.handler = async (event) => {
       unsubscribe_token: unsubToken,
     });
 
-    await sendWelcomeEmail(email, first_name, cities, industries, unsubToken);
+    await sendWelcomeEmail(email, first_name, job_title, company, cities, industries, unsubToken);
 
     return {
       statusCode: 200,

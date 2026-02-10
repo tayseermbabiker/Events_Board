@@ -273,6 +273,8 @@ async function handleLoginSubmit(e) {
   e.preventDefault();
   const name = document.getElementById('login-name').value.trim();
   const email = document.getElementById('login-email').value.trim();
+  const job_title = document.getElementById('login-job-title').value.trim();
+  const company = document.getElementById('login-company').value.trim();
   const cities = getChipValues('modal-emirate');
   const industries = getChipValues('modal-industry');
   const msgEl = document.getElementById('login-message');
@@ -286,7 +288,7 @@ async function handleLoginSubmit(e) {
     const res = await fetch('.netlify/functions/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, first_name: name, cities, industries }),
+      body: JSON.stringify({ email, first_name: name, job_title, company, cities, industries }),
     });
     const data = await res.json();
     if (data.success) {

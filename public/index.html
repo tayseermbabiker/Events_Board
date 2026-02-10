@@ -344,7 +344,10 @@
 
                 <form id="login-form" onsubmit="handleLoginSubmit(event)">
                     <input type="text" id="login-name" name="first_name" placeholder="Your name" required class="input-field" aria-label="Your name">
-                    <input type="email" id="login-email" name="email" placeholder="Your email address" required class="input-field" aria-label="Email address">
+                    <input type="email" id="login-email" name="email" placeholder="Your work email address" required class="input-field" aria-label="Email address">
+                    <p style="margin:-8px 0 8px 2px;font-size:11px;color:var(--text-muted);opacity:0.7;">Work email preferred for personalized alerts</p>
+                    <input type="text" id="login-job-title" name="job_title" placeholder="Job title (e.g. Marketing Manager)" required class="input-field" aria-label="Job title">
+                    <input type="text" id="login-company" name="company" placeholder="Company name" required class="input-field" aria-label="Company name">
 
                     <!-- Emirates preference chips -->
                     <div class="alert-prefs-group" id="modal-emirate-prefs">
