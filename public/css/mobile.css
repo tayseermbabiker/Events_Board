@@ -118,7 +118,7 @@ body {
 /* ===== HERO ===== */
 .hero-section {
   background: linear-gradient(135deg, #0B1426 0%, #1C2333 50%, #0B1426 100%);
-  padding: 32px 0;
+  padding: 20px 0 16px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -160,7 +160,7 @@ body {
 }
 .hero-cta {
   display: inline-block;
-  margin-top: var(--space-lg);
+  margin-top: var(--space-md);
   padding: var(--space-md) var(--space-xl);
   background: var(--accent-gold);
   color: var(--navy-dark);
