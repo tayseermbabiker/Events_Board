@@ -58,7 +58,7 @@ function setupNewsletterForm() {
     btn.disabled = true;
 
     try {
-      const res = await fetch('/.netlify/functions/subscribe', {
+      const res = await fetch('.netlify/functions/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, cities, industries }),
@@ -92,7 +92,7 @@ async function loadEvents() {
     showLoading();
 
     const queryString = getFilterQueryString();
-    const apiUrl = `/.netlify/functions/get-events${queryString ? '?' + queryString : ''}`;
+    const apiUrl = `.netlify/functions/get-events${queryString ? '?' + queryString : ''}`;
 
     const response = await fetch(apiUrl);
 

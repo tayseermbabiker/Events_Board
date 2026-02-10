@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/uae/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unsubscribe — Conferix UAE</title>
@@ -69,26 +70,26 @@
             if (!token) {
                 loading.style.display = 'none';
                 result.style.display = 'block';
-                result.innerHTML = '<h1>Invalid Link</h1><p class="error">No unsubscribe token found.</p><p><a href="/">Back to Conferix</a></p>';
+                result.innerHTML = '<h1>Invalid Link</h1><p class="error">No unsubscribe token found.</p><p><a href="./">Back to Conferix</a></p>';
                 return;
             }
 
             try {
-                const res = await fetch('/.netlify/functions/unsubscribe?token=' + encodeURIComponent(token));
+                const res = await fetch('.netlify/functions/unsubscribe?token=' + encodeURIComponent(token));
                 const data = await res.json();
 
                 loading.style.display = 'none';
                 result.style.display = 'block';
 
                 if (data.success) {
-                    result.innerHTML = '<h1>Unsubscribed</h1><p class="success">You won\'t receive any more emails from us.</p><p>Changed your mind? <a href="/">Re-subscribe anytime</a></p>';
+                    result.innerHTML = '<h1>Unsubscribed</h1><p class="success">You won\'t receive any more emails from us.</p><p>Changed your mind? <a href="./">Re-subscribe anytime</a></p>';
                 } else {
-                    result.innerHTML = '<h1>Something went wrong</h1><p class="error">' + (data.error || 'Please try again.') + '</p><p><a href="/">Back to Conferix</a></p>';
+                    result.innerHTML = '<h1>Something went wrong</h1><p class="error">' + (data.error || 'Please try again.') + '</p><p><a href="./">Back to Conferix</a></p>';
                 }
             } catch (err) {
                 loading.style.display = 'none';
                 result.style.display = 'block';
-                result.innerHTML = '<h1>Connection Error</h1><p class="error">Could not reach the server. Please try again later.</p><p><a href="/">Back to Conferix</a></p>';
+                result.innerHTML = '<h1>Connection Error</h1><p class="error">Could not reach the server. Please try again later.</p><p><a href="./">Back to Conferix</a></p>';
             }
         })();
     </script>

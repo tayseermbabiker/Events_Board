@@ -1,5 +1,5 @@
 # Conferix - UAE Professional Events
-# https://conferix.com
+# https://conferix.com/uae/
 
 # Allow all crawlers
 User-agent: *
@@ -50,6 +50,6 @@ Allow: /
 Sitemap: https://conferix.com/sitemap.xml
 
 # AI-Friendly Endpoints
-# JSON API: https://conferix.com/api/events.json
-# HTML List: https://conferix.com/events-list
-# LLM Guide: https://conferix.com/llms.txt
+# JSON API: https://conferix.com/uae/api/events.json
+# HTML List: https://conferix.com/uae/events-list
+# LLM Guide: https://conferix.com/uae/llms.txt

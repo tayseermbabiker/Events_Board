@@ -13,6 +13,13 @@
 # AIRTABLE_API_KEY = your_airtable_api_key
 # AIRTABLE_BASE_ID = your_airtable_base_id
 
+# Self-rewrite: allow standalone .netlify.app URL to work under /uae/ subpath
+[[redirects]]
+  from = "/uae/*"
+  to = "/:splat"
+  status = 200
+  force = true
+
 # Redirects and rewrites (specific routes MUST come before wildcards)
 
 # JSON API for AI crawlers

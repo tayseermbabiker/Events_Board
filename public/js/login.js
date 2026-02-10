@@ -38,7 +38,7 @@ async function handleLoginSubmit(e) {
     submitBtn.disabled = true;
 
     // Send to Netlify Function
-    const response = await fetch('/.netlify/functions/quick-login', {
+    const response = await fetch('.netlify/functions/quick-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

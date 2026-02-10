@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/uae/">
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQMKXV66K0"></script>
     <script>
@@ -18,23 +19,23 @@
 
     <!-- SEO Meta Tags -->
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://conferix.com/submit.html">
+    <link rel="canonical" href="https://conferix.com/uae/submit.html">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://conferix.com/submit.html">
-    <meta property="og:title" content="Submit Your Event | Conferix">
+    <meta property="og:url" content="https://conferix.com/uae/submit.html">
+    <meta property="og:title" content="Submit Your Event | Conferix UAE">
     <meta property="og:description" content="Submit your professional event to Conferix. Free listing for business conferences, networking events, and industry meetups in UAE.">
-    <meta property="og:image" content="https://conferix.com/og-image.png">
+    <meta property="og:image" content="https://conferix.com/uae/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://conferix.com/submit.html">
-    <meta name="twitter:title" content="Submit Your Event | Conferix">
+    <meta name="twitter:url" content="https://conferix.com/uae/submit.html">
+    <meta name="twitter:title" content="Submit Your Event | Conferix UAE">
     <meta name="twitter:description" content="Submit your professional event to Conferix. Free listing for business conferences, networking events, and industry meetups in UAE.">
-    <meta name="twitter:image" content="https://conferix.com/og-image.png">
+    <meta name="twitter:image" content="https://conferix.com/uae/og-image.png">
 
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
@@ -43,21 +44,21 @@
         "@type": "WebPage",
         "name": "Submit Your Event",
         "description": "Submit your professional event to Conferix for free listing",
-        "url": "https://conferix.com/submit.html",
+        "url": "https://conferix.com/uae/submit.html",
         "isPartOf": {
             "@type": "WebSite",
-            "name": "Conferix",
-            "url": "https://conferix.com"
+            "name": "Conferix UAE",
+            "url": "https://conferix.com/uae/"
         }
     }
     </script>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
 
     <!-- Preconnect to external resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,10 +68,10 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="/css/reset.css">
-    <link rel="stylesheet" href="/css/theme.css">
-    <link rel="stylesheet" href="/css/mobile.css">
-    <link rel="stylesheet" href="/css/desktop.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="css/desktop.css">
 
     <style>
         .submit-page {
@@ -286,7 +287,7 @@
 
     <header class="submit-header">
         <div class="container">
-            <a href="/" class="back-link">← Back to Events</a>
+            <a href="./" class="back-link">← Back to Events</a>
             <h1>Create Your Event</h1>
             <p>Get your professional event in front of UAE's business community</p>
         </div>
@@ -453,7 +454,7 @@
                     contact_email: formData.get('contact_email')
                 };
 
-                const response = await fetch('/.netlify/functions/submit-event', {
+                const response = await fetch('.netlify/functions/submit-event', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)

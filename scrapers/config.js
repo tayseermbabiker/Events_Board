@@ -1,5 +1,5 @@
 module.exports = {
-  webhookUrl: process.env.WEBHOOK_URL || 'https://conferix.com/.netlify/functions/receive-events',
+  webhookUrl: process.env.WEBHOOK_URL || 'https://conferix.com/uae/.netlify/functions/receive-events',
 
   browser: {
     headless: true,

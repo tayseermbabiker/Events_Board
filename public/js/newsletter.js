@@ -40,7 +40,7 @@
             console.log('Sending to newsletter-subscribe:', { email, interests });
 
             // Subscribe via Beehiiv - IMPORTANT: Use correct endpoint
-            const response = await fetch('/.netlify/functions/newsletter-subscribe', {
+            const response = await fetch('.netlify/functions/newsletter-subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

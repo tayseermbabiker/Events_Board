@@ -150,7 +150,7 @@ async function handleBooking(eventId, registrationUrl) {
     };
 
     // Send tracking request (don't await - fire and forget)
-    fetch('/.netlify/functions/track-booking', {
+    fetch('.netlify/functions/track-booking', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(trackingData)
