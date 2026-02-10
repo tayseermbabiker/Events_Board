@@ -29,12 +29,12 @@ function initializeLoginState() {
       const confirmLogout = confirm(`Hi ${user.first_name}!\n\nWould you like to logout?`);
       if (confirmLogout) {
         removeUser();
-        loginBtn.textContent = 'Sign Up';
+        loginBtn.textContent = 'Sign In';
         loginBtn.onclick = openLoginModal;
       }
     };
   } else {
-    loginBtn.textContent = 'Sign Up';
+    loginBtn.textContent = 'Sign In';
     loginBtn.onclick = openLoginModal;
   }
 }

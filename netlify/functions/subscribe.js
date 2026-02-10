@@ -6,7 +6,7 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY })
   .base(process.env.AIRTABLE_BASE_ID);
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const SITE_URL = process.env.URL || 'https://conferix.com';
+const SITE_URL = process.env.SITE_URL || 'https://conferix.com/uae';
 const SUBSCRIBERS = base('Subscribers');
 
 function buildWelcomeEmail(name, cities, industries, unsubToken) {
@@ -93,7 +93,11 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { email, first_name, cities, industries } = JSON.parse(event.body);
+    const body = JSON.parse(event.body);
+    const email = body.email;
+    const first_name = body.first_name;
+    const cities = body.cities || 'All Emirates';
+    const industries = body.industries || 'All Industries';
 
     if (!email) {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Email is required' }) };
@@ -109,8 +113,8 @@ exports.handler = async (event) => {
     if (existing.length > 0) {
       await SUBSCRIBERS.update(existing[0].id, {
         first_name: first_name || existing[0].get('first_name') || '',
-        cities: cities || '',
-        industries: industries || '',
+        cities: cities,
+        industries: industries,
         is_active: true,
       });
 
@@ -128,8 +132,8 @@ exports.handler = async (event) => {
     await SUBSCRIBERS.create({
       email,
       first_name: first_name || '',
-      cities: cities || '',
-      industries: industries || '',
+      cities: cities,
+      industries: industries,
       is_active: true,
       created_at: today,
       unsubscribe_token: unsubToken,
