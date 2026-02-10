@@ -129,6 +129,8 @@ function renderEventCards(events) {
     const card = createEventCard(event);
     eventsGrid.appendChild(card);
   });
+
+  injectJsonLd(events);
 }
 
 /**
@@ -170,6 +172,70 @@ async function handleBooking(eventId, registrationUrl) {
       window.open(registrationUrl, '_blank', 'noopener,noreferrer');
     }
   }
+}
+
+/**
+ * Inject JSON-LD structured data for SEO (schema.org Event)
+ */
+function injectJsonLd(events) {
+  const existing = document.getElementById('json-ld-events');
+  if (existing) existing.remove();
+
+  const items = events.slice(0, 50).map((evt, i) => {
+    const item = {
+      '@type': 'ListItem',
+      'position': i + 1,
+      'item': {
+        '@type': 'Event',
+        'name': evt.title,
+        'startDate': evt.start_date,
+        'eventStatus': 'https://schema.org/EventScheduled',
+        'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
+      }
+    };
+
+    const e = item.item;
+    if (evt.end_date) e.endDate = evt.end_date;
+    if (evt.description) e.description = evt.description.substring(0, 300);
+    if (evt.image_url) e.image = evt.image_url;
+    if (evt.registration_url) e.url = evt.registration_url;
+
+    if (evt.venue_name || evt.venue_address || evt.city) {
+      e.location = { '@type': 'Place', 'name': evt.venue_name || evt.city || 'TBA' };
+      if (evt.venue_address || evt.city) {
+        e.location.address = { '@type': 'PostalAddress' };
+        if (evt.venue_address) e.location.address.streetAddress = evt.venue_address;
+        if (evt.city) e.location.address.addressLocality = evt.city;
+        e.location.address.addressCountry = 'AE';
+      }
+    }
+
+    if (evt.organizer) {
+      e.organizer = { '@type': 'Organization', 'name': evt.organizer };
+    }
+
+    e.offers = {
+      '@type': 'Offer',
+      'price': evt.is_free ? '0' : '',
+      'priceCurrency': 'AED',
+      'availability': 'https://schema.org/InStock',
+    };
+    if (evt.registration_url) e.offers.url = evt.registration_url;
+
+    return item;
+  });
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'itemListElement': items,
+  };
+
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.id = 'json-ld-events';
+  script.textContent = JSON.stringify(schema);
+  document.head.appendChild(script);
 }
 
 // Export functions globally
