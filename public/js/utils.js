@@ -187,7 +187,7 @@ function updateUIForLoggedInUser(user) {
 }
 
 /**
- * Generate next 6 months for filter dropdown
+ * Generate next 12 months for filter dropdown
  * @returns {Array} Array of {value, label} objects
  */
 function getNext6Months() {
@@ -197,7 +197,7 @@ function getNext6Months() {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 12; i++) {
     const date = new Date();
     date.setMonth(date.getMonth() + i);
 
