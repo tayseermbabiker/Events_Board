@@ -214,6 +214,22 @@ function getNext6Months() {
   return months;
 }
 
+// Industry-specific gradient for placeholder images
+function getIndustryGradient(industry) {
+  const gradients = {
+    'Tech & AI': 'linear-gradient(135deg, #0B1426 0%, #0EA5E9 100%)',
+    'Finance': 'linear-gradient(135deg, #1C2333 0%, #10B981 100%)',
+    'Legal': 'linear-gradient(135deg, #2D3748 0%, #8B5CF6 100%)',
+    'Healthcare': 'linear-gradient(135deg, #0B1426 0%, #EF4444 100%)',
+    'Real Estate & Construction': 'linear-gradient(135deg, #1C2333 0%, #F59E0B 100%)',
+    'Hospitality & F&B': 'linear-gradient(135deg, #2D3748 0%, #EC4899 100%)',
+    'Energy & Government': 'linear-gradient(135deg, #0B1426 0%, #6366F1 100%)',
+    'Startups': 'linear-gradient(135deg, #1C2333 0%, #14B8A6 100%)',
+    'General': 'linear-gradient(135deg, #142952 0%, #00875A 100%)',
+  };
+  return gradients[industry] || gradients['General'];
+}
+
 // Export functions globally
 window.formatDate = formatDate;
 window.formatTime = formatTime;
@@ -232,3 +248,4 @@ window.saveUser = saveUser;
 window.removeUser = removeUser;
 window.updateUIForLoggedInUser = updateUIForLoggedInUser;
 window.getNext6Months = getNext6Months;
+window.getIndustryGradient = getIndustryGradient;

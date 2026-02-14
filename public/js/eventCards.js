@@ -1,5 +1,13 @@
 // Event Card Rendering & Booking Logic
 
+function addIndustryPlaceholder(wrapper, industry) {
+  wrapper.style.background = getIndustryGradient(industry);
+  const label = document.createElement('span');
+  label.className = 'placeholder-industry';
+  label.textContent = industry || 'Event';
+  wrapper.appendChild(label);
+}
+
 /**
  * Create event card DOM element
  * @param {object} event - Event data from Airtable
@@ -15,16 +23,17 @@ function createEventCard(event) {
   const imageWrapper = document.createElement('div');
   imageWrapper.className = 'event-card-image-wrapper';
 
-  // Event image or random gradient placeholder
+  // Event image or industry placeholder
   if (event.image_url) {
     const img = document.createElement('img');
     img.className = 'event-card-image';
     img.src = event.image_url;
     img.alt = event.title;
     img.loading = 'lazy';
+    img.onerror = function() { addIndustryPlaceholder(this.parentElement, event.industry); this.remove(); };
     imageWrapper.appendChild(img);
   } else {
-    imageWrapper.style.background = getRandomGradient();
+    addIndustryPlaceholder(imageWrapper, event.industry);
   }
 
   // Category badge (top-left)

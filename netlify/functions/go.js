@@ -33,9 +33,22 @@ function buildEventPage(ev, related) {
   const calLocation = encodeURIComponent([venue, address, city].filter(Boolean).join(', '));
   const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calTitle}&dates=${calStart}/${calEnd}&details=${calDetails}&location=${calLocation}`;
 
+  const industryGradients = {
+    'Tech & AI': 'linear-gradient(135deg, #0B1426, #0EA5E9)',
+    'Finance': 'linear-gradient(135deg, #1C2333, #10B981)',
+    'Legal': 'linear-gradient(135deg, #2D3748, #8B5CF6)',
+    'Healthcare': 'linear-gradient(135deg, #0B1426, #EF4444)',
+    'Real Estate & Construction': 'linear-gradient(135deg, #1C2333, #F59E0B)',
+    'Hospitality & F&B': 'linear-gradient(135deg, #2D3748, #EC4899)',
+    'Energy & Government': 'linear-gradient(135deg, #0B1426, #6366F1)',
+    'Startups': 'linear-gradient(135deg, #1C2333, #14B8A6)',
+    'General': 'linear-gradient(135deg, #142952, #00875A)',
+  };
+  const placeholderGradient = industryGradients[industry] || industryGradients['General'];
+
   const imageBanner = imageUrl
     ? `<img src="${imageUrl}" alt="${title}" style="width:100%;max-height:280px;object-fit:cover;border-radius:8px;margin-bottom:24px;">`
-    : '';
+    : `<div style="width:100%;height:180px;border-radius:8px;margin-bottom:24px;background:${placeholderGradient};display:flex;align-items:center;justify-content:center;"><span style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.85);letter-spacing:1px;text-transform:uppercase;">${industry || 'Event'}</span></div>`;
 
   const detailRow = (label, value) => value
     ? `<tr><td style="padding:6px 0;font-size:13px;color:#94a3b8;width:100px;vertical-align:top;">${label}</td><td style="padding:6px 0;font-size:14px;color:#0B1426;">${value}</td></tr>`
