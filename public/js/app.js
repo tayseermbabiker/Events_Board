@@ -29,7 +29,10 @@ function setupNewsletterForm() {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const first_name = (document.getElementById('newsletter-name').value || '').trim();
     const email = document.getElementById('newsletter-email').value.trim();
+    const job_title = (document.getElementById('newsletter-job-title').value || '').trim();
+    const company = (document.getElementById('newsletter-company').value || '').trim();
     if (!email) return;
 
     const cities = getChipValues('nl-emirate');
@@ -45,7 +48,7 @@ function setupNewsletterForm() {
       const res = await fetch('.netlify/functions/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, cities, industries }),
+        body: JSON.stringify({ email, first_name, job_title, company, cities, industries }),
       });
       const data = await res.json();
 
