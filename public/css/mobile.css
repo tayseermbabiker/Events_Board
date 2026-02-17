@@ -145,7 +145,7 @@ body {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(11, 20, 38, 0.65);
+  background: rgba(11, 20, 38, 0.45);
   pointer-events: none;
 }
 .hero-section .container { position: relative; z-index: 1; }
