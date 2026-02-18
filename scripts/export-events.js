@@ -9,7 +9,7 @@ async function exportEvents() {
 
   const records = await base('Events')
     .select({
-      filterByFormula: 'AND(OR(AND({status} = "Active", IS_AFTER({start_date}, NOW())), AND({status} = "Ongoing", IS_AFTER({end_date}, NOW()))), {industry} != "General")',
+      filterByFormula: 'OR(IS_AFTER({start_date}, DATEADD(NOW(), -1, "day")), AND(IS_AFTER({end_date}, NOW()), {end_date} != BLANK()))',
       sort: [{ field: 'start_date', direction: 'asc' }],
       maxRecords: 200
     })
