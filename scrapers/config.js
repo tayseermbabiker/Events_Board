@@ -8,8 +8,8 @@ module.exports = {
   },
 
   batch: {
-    size: 50,
-    delayMs: 2000,
+    size: 5,
+    delayMs: 1000,
   },
 
   scrapers: {

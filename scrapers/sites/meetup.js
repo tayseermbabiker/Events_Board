@@ -2,7 +2,10 @@ const BaseScraper = require('../base-scraper');
 const logger = require('../utils/logger');
 const { classifyIndustry } = require('../utils/industry-map');
 
-const SEARCH_URL = 'https://www.meetup.com/find/?location=ae--dubai&source=EVENTS&categoryId=546';
+const SEARCH_URLS = [
+  { url: 'https://www.meetup.com/find/?location=ae--dubai&source=EVENTS', city: 'Dubai' },
+  { url: 'https://www.meetup.com/find/?location=ae--abu-dhabi&source=EVENTS', city: 'Abu Dhabi' },
+];
 const MAX_SCROLLS = 10;
 
 class MeetupScraper extends BaseScraper {
@@ -11,53 +14,67 @@ class MeetupScraper extends BaseScraper {
   }
 
   async scrape() {
-    logger.info(this.name, `Fetching: ${SEARCH_URL}`);
-    await this.page.goto(SEARCH_URL, { waitUntil: 'domcontentloaded' });
-    await this.page.waitForTimeout(3000);
+    const allEvents = [];
+    const seen = new Set();
 
-    // Try Apollo state first
-    let events = await this.extractFromApollo();
-    if (events.length > 0) {
-      logger.info(this.name, `Got ${events.length} events from Apollo state`);
-    }
+    for (const { url, city } of SEARCH_URLS) {
+      logger.info(this.name, `Fetching ${city}: ${url}`);
+      await this.page.goto(url, { waitUntil: 'domcontentloaded' });
+      await this.page.waitForTimeout(3000);
 
-    // Scroll to load more events
-    let prevCount = events.length;
-    for (let i = 0; i < MAX_SCROLLS; i++) {
-      await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await this.page.waitForTimeout(2000);
-
-      const moreEvents = await this.extractFromApollo();
-      if (moreEvents.length > prevCount) {
-        events = moreEvents;
-        prevCount = events.length;
-        logger.info(this.name, `Scroll ${i + 1}: total ${events.length} events`);
-      } else {
-        // Also try "Show more" button
-        const showMore = await this.page.$('button:has-text("Show more"), button:has-text("Load more")');
-        if (showMore) {
-          try {
-            await showMore.click();
-            await this.page.waitForTimeout(2000);
-            const afterClick = await this.extractFromApollo();
-            if (afterClick.length > prevCount) {
-              events = afterClick;
-              prevCount = events.length;
-              continue;
-            }
-          } catch { /* button click failed */ }
-        }
-        break;
+      // Try Apollo state first
+      let events = await this.extractFromApollo();
+      if (events.length > 0) {
+        logger.info(this.name, `${city}: ${events.length} events from Apollo state`);
       }
+
+      // Scroll to load more events
+      let prevCount = events.length;
+      for (let i = 0; i < MAX_SCROLLS; i++) {
+        await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        await this.page.waitForTimeout(2000);
+
+        const moreEvents = await this.extractFromApollo();
+        if (moreEvents.length > prevCount) {
+          events = moreEvents;
+          prevCount = events.length;
+          logger.info(this.name, `${city} scroll ${i + 1}: total ${events.length} events`);
+        } else {
+          const showMore = await this.page.$('button:has-text("Show more"), button:has-text("Load more")');
+          if (showMore) {
+            try {
+              await showMore.click();
+              await this.page.waitForTimeout(2000);
+              const afterClick = await this.extractFromApollo();
+              if (afterClick.length > prevCount) {
+                events = afterClick;
+                prevCount = events.length;
+                continue;
+              }
+            } catch { /* button click failed */ }
+          }
+          break;
+        }
+      }
+
+      // If Apollo didn't work, fall back to DOM
+      if (events.length === 0) {
+        events = await this.extractFromDom();
+        logger.info(this.name, `${city}: ${events.length} events from DOM`);
+      }
+
+      // Deduplicate across cities
+      for (const ev of events) {
+        if (!seen.has(ev.source_event_id)) {
+          seen.add(ev.source_event_id);
+          allEvents.push(ev);
+        }
+      }
+
+      logger.info(this.name, `${city} done: ${events.length} found, ${allEvents.length} total unique`);
     }
 
-    // If Apollo didn't work, fall back to DOM
-    if (events.length === 0) {
-      events = await this.extractFromDom();
-      logger.info(this.name, `Got ${events.length} events from DOM`);
-    }
-
-    return events;
+    return allEvents;
   }
 
   async extractFromApollo() {
@@ -119,7 +136,6 @@ class MeetupScraper extends BaseScraper {
         const title = await card.$eval('h2, h3', el => el.textContent.trim()).catch(() => null);
         const link = await card.$eval('a[href*="/events/"]', el => el.href).catch(() => null);
         const dateText = await card.$eval('time[datetime]', el => el.getAttribute('datetime')).catch(() => null);
-        // Extract group name from URL: meetup.com/GROUP-NAME/events/ID
         const groupSlug = link ? link.match(/meetup\.com\/([^/]+)\/events/)?.[1] : null;
         const groupName = groupSlug ? groupSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : null;
         const img = await card.$eval('img[alt]', el => el.src).catch(() => null);
@@ -141,7 +157,7 @@ class MeetupScraper extends BaseScraper {
             city: this.detectCity(locationText),
             organizer: groupName,
             industry: classifyIndustry(title),
-            is_free: true, // Most Meetup events are free — cards don't show pricing
+            is_free: true,
             registration_url: link,
             image_url: img,
             source: 'Meetup',
