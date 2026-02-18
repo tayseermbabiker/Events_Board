@@ -63,9 +63,9 @@ class MeetupScraper extends BaseScraper {
         logger.info(this.name, `${city}: ${events.length} events from DOM`);
       }
 
-      // Deduplicate across cities
+      // Deduplicate across cities, drop non-professional events
       for (const ev of events) {
-        if (!seen.has(ev.source_event_id)) {
+        if (!seen.has(ev.source_event_id) && ev.industry !== 'General') {
           seen.add(ev.source_event_id);
           allEvents.push(ev);
         }
