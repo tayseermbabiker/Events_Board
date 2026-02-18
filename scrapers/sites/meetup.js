@@ -3,8 +3,8 @@ const logger = require('../utils/logger');
 const { classifyIndustry } = require('../utils/industry-map');
 
 const SEARCH_URLS = [
-  { url: 'https://www.meetup.com/find/?location=ae--dubai&source=EVENTS', city: 'Dubai' },
-  { url: 'https://www.meetup.com/find/?location=ae--abu-dhabi&source=EVENTS', city: 'Abu Dhabi' },
+  { url: 'https://www.meetup.com/find/?location=ae--Dubai&source=EVENTS', city: 'Dubai' },
+  { url: 'https://www.meetup.com/find/?location=ae--Abu+Dhabi&source=EVENTS', city: 'Abu Dhabi' },
 ];
 const MAX_SCROLLS = 10;
 
