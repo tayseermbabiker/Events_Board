@@ -75,36 +75,13 @@ function createEventCard(event) {
   `;
   meta.appendChild(dateItem);
 
-  // Venue (if available)
-  if (event.venue_name) {
-    const venueItem = document.createElement('div');
-    venueItem.className = 'event-meta-item';
-    venueItem.innerHTML = `
-      <span class="icon">📍</span>
-      <span>${escapeHtml(truncateText(event.venue_name, 40))}</span>
-    `;
-    meta.appendChild(venueItem);
-  }
-
   content.appendChild(meta);
 
-  // Organizer
-  if (event.organizer) {
-    const organizer = document.createElement('p');
-    organizer.className = 'event-organizer';
-    organizer.textContent = `By ${escapeHtml(event.organizer)}`;
-    content.appendChild(organizer);
-  }
-
-  // Book Now button
-  const bookBtn = document.createElement('button');
-  bookBtn.className = 'btn-primary btn-full';
-  bookBtn.textContent = event.is_free ? 'Register Free' : 'Book Now';
-  bookBtn.onclick = (e) => {
-    e.stopPropagation();
-    handleBooking(event.id, event.registration_url);
-  };
-  content.appendChild(bookBtn);
+  // View details hint
+  const detailsHint = document.createElement('p');
+  detailsHint.className = 'view-details-hint';
+  detailsHint.textContent = 'View details \u2192';
+  content.appendChild(detailsHint);
 
   card.appendChild(content);
 
