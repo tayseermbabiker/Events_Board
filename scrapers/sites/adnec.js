@@ -2,7 +2,9 @@ const BaseScraper = require('../base-scraper');
 const logger = require('../utils/logger');
 const { classifyIndustry } = require('../utils/industry-map');
 
-const EVENTS_URL = 'https://adnec.ae/en/eventlisting';
+// ADNEC redesigned in 2025 — now a Livewire app with Tailwind
+// URL pattern changed from /en/event/ to /en/eventlisting/
+const EVENTS_URL = 'https://www.adnec.ae/en/eventlisting';
 
 class AdnecScraper extends BaseScraper {
   constructor() {
@@ -16,136 +18,139 @@ class AdnecScraper extends BaseScraper {
       'Accept-Language': 'en-US,en;q=0.9',
     });
 
-    await this.page.goto(EVENTS_URL, { waitUntil: 'domcontentloaded' });
-    await this.page.waitForTimeout(5000);
+    // ADNEC intermittently returns 403 — retry up to 3 times
+    let response;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      response = await this.page.goto(EVENTS_URL, { waitUntil: 'domcontentloaded' });
+      if (response.status() === 200) break;
+      logger.warn(this.name, `Attempt ${attempt}: got ${response.status()}, retrying...`);
+      await this.page.waitForTimeout(3000);
+    }
 
-    // Check for 403
-    const bodyText = await this.page.evaluate(() => document.body.innerText.substring(0, 200));
-    if (bodyText.includes('403') || bodyText.includes('Forbidden')) {
-      logger.warn(this.name, 'Site returned 403 Forbidden');
+    if (!response || response.status() !== 200) {
+      logger.warn(this.name, `Site returned ${response?.status()} after retries`);
       return [];
     }
 
-    // Extract events from the page structure
-    // ADNEC renders events as card-like blocks with date, title, venue
+    await this.page.waitForTimeout(5000);
+
+    // Click "Show more" to load all events
+    let showMoreClicks = 0;
+    while (showMoreClicks < 10) {
+      const showMore = await this.page.$('button:has-text("Show more")');
+      if (!showMore || !await showMore.isVisible()) break;
+      try {
+        await showMore.click();
+        await this.page.waitForTimeout(2000);
+        showMoreClicks++;
+        logger.info(this.name, `Clicked Show more (${showMoreClicks})`);
+      } catch { break; }
+    }
+
+    // Extract events from individual card containers
+    // Each card has an <a> with title attr and href to /en/eventlisting/slug
     const events = await this.page.evaluate(() => {
       const results = [];
-      // Find all links to event detail pages
-      const eventLinks = document.querySelectorAll('a[href*="/en/event/"], a[href*="/event/"]');
+      const seen = new Set();
 
-      for (const link of eventLinks) {
-        const container = link.closest('div') || link.parentElement;
-        if (!container) continue;
+      // Find all event links with title attr
+      const links = document.querySelectorAll('a[href*="/en/eventlisting/"][title]');
 
-        const title = link.textContent.trim();
+      for (const link of links) {
+        const href = link.href;
+        const slug = href.split('/').filter(Boolean).pop();
+
+        // Skip the listing page itself
+        if (slug === 'eventlisting' || seen.has(slug)) continue;
+        seen.add(slug);
+
+        const title = link.getAttribute('title');
         if (!title || title.length < 3) continue;
 
-        // Look for date info in sibling/parent elements
-        const parentBlock = container.parentElement || container;
-        const allText = parentBlock.innerText;
+        // Get image from within the link
+        const img = link.querySelector('img');
+        const imgSrc = img ? img.src : null;
 
-        // Date pattern: "03\n-\n07  Feb" or "07\n-\n14  Feb"
-        const dateMatch = allText.match(/(\d{1,2})\s*[-–]\s*(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i);
-        const singleDateMatch = !dateMatch ? allText.match(/(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i) : null;
+        // Find the parent card container for date/venue info
+        const card = link.closest('article')
+          || link.closest('[wire\\:key]')
+          || link.closest('.group')
+          || link.parentElement;
 
-        const year = new Date().getFullYear();
-        let startDate = null;
-        let endDate = null;
+        let dateText = '';
+        let venue = '';
+        let description = '';
 
-        if (dateMatch) {
-          startDate = `${dateMatch[1]} ${dateMatch[3]} ${year}`;
-          endDate = `${dateMatch[2]} ${dateMatch[3]} ${year}`;
-        } else if (singleDateMatch) {
-          startDate = `${singleDateMatch[1]} ${singleDateMatch[2]} ${year}`;
+        if (card) {
+          const cardText = card.innerText;
+
+          // Date format in ADNEC: "18  Feb\n-\n18  Mar" or "28\n-\n29  Mar"
+          // Extract month abbreviations and numbers
+          const months = 'Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec';
+
+          // Cross-month range: "18  Feb\n-\n18  Mar"
+          const crossMonth = cardText.match(new RegExp(
+            `(\\d{1,2})\\s+(${months})\\s*[-–]\\s*(\\d{1,2})\\s+(${months})`, 'i'
+          ));
+          // Same-month range: "28\n-\n29  Mar"
+          const sameMonth = !crossMonth ? cardText.match(new RegExp(
+            `(\\d{1,2})\\s*[-–]\\s*(\\d{1,2})\\s+(${months})`, 'i'
+          )) : null;
+          // Single date: "18  Feb"
+          const single = (!crossMonth && !sameMonth) ? cardText.match(new RegExp(
+            `(\\d{1,2})\\s+(${months})`, 'i'
+          )) : null;
+
+          const year = new Date().getFullYear();
+
+          if (crossMonth) {
+            dateText = `${crossMonth[1]} ${crossMonth[2]} ${year}`;
+          } else if (sameMonth) {
+            dateText = `${sameMonth[1]} ${sameMonth[3]} ${year}`;
+          } else if (single) {
+            dateText = `${single[1]} ${single[2]} ${year}`;
+          }
+
+          // Look for venue/hall info
+          const venueMatch = cardText.match(/(?:Hall[s]?\s+[\w\s&-]+|Marina Hall|Conference Hall[s]?\s+[\w\s&]+)/i);
+          if (venueMatch) venue = venueMatch[0].trim();
+
+          // Get description if available (usually after the title)
+          const descEl = card.querySelector('p, [class*="description"], [class*="excerpt"]');
+          if (descEl) description = descEl.textContent.trim();
         }
-
-        // Look for venue info
-        const venueEl = parentBlock.querySelector('[class*="venue"], [class*="location"]');
-        const venueText = venueEl ? venueEl.textContent.trim() : null;
-
-        const img = parentBlock.querySelector('img');
-        const slug = link.href.split('/').filter(Boolean).pop();
 
         results.push({
           title,
-          startDate,
-          endDate,
-          venue: venueText,
-          href: link.href,
-          img: img?.src || null,
+          href,
           slug,
+          dateText,
+          venue,
+          description: description.substring(0, 1000),
+          img: imgSrc,
         });
       }
 
       return results;
     });
 
-    // If no links found, try heading-based extraction
-    if (events.length === 0) {
-      const headingEvents = await this.extractFromHeadings();
-      if (headingEvents.length > 0) return headingEvents;
-    }
+    logger.info(this.name, `Got ${events.length} events`);
 
-    // Deduplicate by title
-    const seen = new Set();
-    const deduped = [];
-    for (const ev of events) {
-      if (!seen.has(ev.title)) {
-        seen.add(ev.title);
-        deduped.push(ev);
-      }
-    }
-
-    logger.info(this.name, `Got ${deduped.length} events`);
-
-    return deduped.map(ev => ({
+    return events.map(ev => ({
       title: ev.title,
-      description: '',
-      start_date: ev.startDate,
-      end_date: ev.endDate || null,
+      description: ev.description,
+      start_date: ev.dateText || null,
+      end_date: null,
       venue_name: ev.venue || 'ADNEC',
       venue_address: null,
       city: 'Abu Dhabi',
       organizer: 'ADNEC',
-      industry: classifyIndustry(ev.title),
+      industry: classifyIndustry(`${ev.title} ${ev.description}`),
       is_free: false,
       registration_url: ev.href,
       image_url: ev.img,
       source: 'ADNEC',
-      source_event_id: `adnec-${ev.slug || ev.title.toLowerCase().replace(/\s+/g, '-')}`,
-    }));
-  }
-
-  async extractFromHeadings() {
-    // Fallback: find h2/h3 headings that look like event names
-    const headings = await this.page.$$eval('h2, h3', els =>
-      els.map(el => {
-        const link = el.closest('a') || el.querySelector('a') || el.parentElement?.closest('a');
-        const parent = el.closest('[class*="event"], [class*="card"]') || el.parentElement;
-        const dateEl = parent?.querySelector('[class*="date"], time');
-        return {
-          title: el.textContent.trim(),
-          href: link?.href || null,
-          dateText: dateEl?.textContent?.trim() || null,
-        };
-      }).filter(h => h.title.length > 5 && !['Upcoming Events', 'Latest Press Releases', 'Footer', 'Latest Events'].includes(h.title))
-    );
-
-    return headings.map(h => ({
-      title: h.title,
-      description: '',
-      start_date: h.dateText,
-      end_date: null,
-      venue_name: 'ADNEC',
-      venue_address: null,
-      city: 'Abu Dhabi',
-      organizer: 'ADNEC',
-      industry: classifyIndustry(h.title),
-      is_free: false,
-      registration_url: h.href,
-      image_url: null,
-      source: 'ADNEC',
-      source_event_id: `adnec-${h.href?.split('/').filter(Boolean).pop() || h.title.toLowerCase().replace(/\s+/g, '-')}`,
+      source_event_id: `adnec-${ev.slug}`,
     }));
   }
 }

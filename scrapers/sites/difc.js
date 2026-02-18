@@ -1,7 +1,8 @@
 const BaseScraper = require('../base-scraper');
 const logger = require('../utils/logger');
 
-const PAGE_URL = 'https://www.difc.ae/events';
+// DIFC moved from difc.ae to difc.com (301 redirect, Feb 2026)
+const PAGE_URL = 'https://www.difc.com/whats-on/events';
 
 class DifcScraper extends BaseScraper {
   constructor() {
