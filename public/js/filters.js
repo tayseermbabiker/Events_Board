@@ -1,4 +1,4 @@
-// Filters Logic (Month, Industry, City) - Multi-select support
+// Filters Logic (Month, Industry, Cost, City) - Custom dropdowns
 
 let allEvents = [];
 let activeFilters = {
@@ -8,35 +8,12 @@ let activeFilters = {
   cities: []
 };
 
-/**
- * Initialize filters
- */
 function initializeFilters() {
-  // Month filter (single select)
-  const monthFilter = document.getElementById('filter-month');
-  if (monthFilter) {
-    const months = getNext6Months();
-    months.forEach(month => {
-      const option = document.createElement('option');
-      option.value = month.value;
-      option.textContent = month.label;
-      monthFilter.appendChild(option);
-    });
+  // Month filter (custom single-select dropdown)
+  setupSingleSelect('month', 'month', 'All Months', getNext6Months());
 
-    monthFilter.addEventListener('change', (e) => {
-      activeFilters.month = e.target.value;
-      applyFilters();
-    });
-  }
-
-  // Cost filter (single select)
-  const costFilter = document.getElementById('filter-cost');
-  if (costFilter) {
-    costFilter.addEventListener('change', (e) => {
-      activeFilters.cost = e.target.value;
-      applyFilters();
-    });
-  }
+  // Cost filter (custom single-select dropdown)
+  setupSingleSelect('cost', 'cost', 'All Costs');
 
   // Industry multi-select
   setupMultiSelect('industry', 'industries', 'All Industries');
@@ -58,33 +35,62 @@ function initializeFilters() {
   });
 }
 
-/**
- * Setup multi-select dropdown
- */
-function setupMultiSelect(name, filterKey, defaultLabel) {
+function setupSingleSelect(name, filterKey, defaultLabel, options) {
   const btn = document.getElementById(`${name}-btn`);
   const dropdown = document.getElementById(`${name}-dropdown`);
-
   if (!btn || !dropdown) return;
 
-  // Toggle dropdown
+  // Populate options dynamically (e.g. months)
+  if (options) {
+    options.forEach(opt => {
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = `filter-${name}`;
+      input.value = opt.value;
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(' ' + opt.label));
+      dropdown.appendChild(label);
+    });
+  }
+
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    // Close other dropdowns
     document.querySelectorAll('.multi-select-dropdown').forEach(d => {
       if (d !== dropdown) d.classList.remove('open');
     });
     dropdown.classList.toggle('open');
   });
 
-  // Handle checkbox changes
+  dropdown.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      activeFilters[filterKey] = radio.value;
+      btn.textContent = radio.value ? radio.parentElement.textContent.trim() + ' ▾' : defaultLabel + ' ▾';
+      dropdown.classList.remove('open');
+      applyFilters();
+    });
+  });
+}
+
+function setupMultiSelect(name, filterKey, defaultLabel) {
+  const btn = document.getElementById(`${name}-btn`);
+  const dropdown = document.getElementById(`${name}-dropdown`);
+  if (!btn || !dropdown) return;
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.querySelectorAll('.multi-select-dropdown').forEach(d => {
+      if (d !== dropdown) d.classList.remove('open');
+    });
+    dropdown.classList.toggle('open');
+  });
+
   dropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.addEventListener('change', () => {
       const checked = dropdown.querySelectorAll('input:checked');
       const values = Array.from(checked).map(c => c.value);
       activeFilters[filterKey] = values;
 
-      // Update button text
       if (values.length === 0) {
         btn.textContent = defaultLabel + ' ▾';
       } else if (values.length === 1) {
@@ -98,23 +104,15 @@ function setupMultiSelect(name, filterKey, defaultLabel) {
   });
 }
 
-/**
- * Apply filters
- */
 function applyFilters() {
   let filtered = [...allEvents];
 
-  // Month
   if (activeFilters.month) {
     filtered = filtered.filter(e => e.start_date.substring(0, 7) === activeFilters.month);
   }
-
-  // Industries (multi)
   if (activeFilters.industries.length > 0) {
     filtered = filtered.filter(e => activeFilters.industries.includes(e.industry));
   }
-
-  // Cost
   if (activeFilters.cost) {
     filtered = filtered.filter(e => {
       if (activeFilters.cost === 'free') return e.is_free === true;
@@ -122,8 +120,6 @@ function applyFilters() {
       return true;
     });
   }
-
-  // Cities (multi)
   if (activeFilters.cities.length > 0) {
     filtered = filtered.filter(e => activeFilters.cities.includes(e.city));
   }
@@ -132,24 +128,22 @@ function applyFilters() {
   updateClearButtonVisibility();
 }
 
-/**
- * Clear all filters
- */
 function clearFilters() {
   activeFilters = { month: '', industries: [], cost: '', cities: [] };
 
-  // Reset dropdowns
-  const monthFilter = document.getElementById('filter-month');
-  const costFilter = document.getElementById('filter-cost');
-  if (monthFilter) monthFilter.value = '';
-  if (costFilter) costFilter.value = '';
+  // Reset single-select radios
+  document.querySelectorAll('.single-select input[type="radio"][value=""]').forEach(r => r.checked = true);
 
-  // Reset checkboxes
-  document.querySelectorAll('.multi-select-dropdown input').forEach(cb => cb.checked = false);
+  // Reset multi-select checkboxes
+  document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]').forEach(cb => cb.checked = false);
 
   // Reset button labels
+  const monthBtn = document.getElementById('month-btn');
+  const costBtn = document.getElementById('cost-btn');
   const industryBtn = document.getElementById('industry-btn');
   const cityBtn = document.getElementById('city-btn');
+  if (monthBtn) monthBtn.textContent = 'All Months ▾';
+  if (costBtn) costBtn.textContent = 'All Costs ▾';
   if (industryBtn) industryBtn.textContent = 'All Industries ▾';
   if (cityBtn) cityBtn.textContent = 'All Emirates ▾';
 
@@ -157,9 +151,6 @@ function clearFilters() {
   updateClearButtonVisibility();
 }
 
-/**
- * Update clear button visibility
- */
 function updateClearButtonVisibility() {
   const clearBtn = document.getElementById('clear-filters');
   if (!clearBtn) return;
@@ -168,17 +159,11 @@ function updateClearButtonVisibility() {
   clearBtn.style.display = hasFilters ? 'inline-block' : 'none';
 }
 
-/**
- * Set all events
- */
 function setAllEvents(events) {
   allEvents = events || [];
   renderEventCards(allEvents);
 }
 
-/**
- * Get filter query string
- */
 function getFilterQueryString() {
   const params = new URLSearchParams();
   if (activeFilters.month) params.append('month', activeFilters.month);
