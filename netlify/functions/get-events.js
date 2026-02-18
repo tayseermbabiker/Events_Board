@@ -32,7 +32,7 @@ exports.handler = async (event, context) => {
     // Status is now a formula that returns "Active", "Expired", or "Ongoing"
     // - Active events: start_date is in the future (upcoming)
     // - Ongoing events: end_date is in the future (currently happening)
-    let filterFormula = 'AND(OR(AND({status} = "Active", IS_AFTER({start_date}, NOW())), AND({status} = "Ongoing", IS_AFTER({end_date}, NOW())))';
+    let filterFormula = 'AND(OR(AND({status} = "Active", IS_AFTER({start_date}, NOW())), AND({status} = "Ongoing", IS_AFTER({end_date}, NOW()))), {industry} != "General"';
 
     // Filter by month
     if (month) {
