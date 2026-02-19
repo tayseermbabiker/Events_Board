@@ -1,8 +1,16 @@
 const BaseScraper = require('../base-scraper');
 const logger = require('../utils/logger');
+const { classifyIndustry } = require('../utils/industry-map');
 
 // DIFC moved from difc.ae to difc.com (301 redirect, Feb 2026)
 const PAGE_URL = 'https://www.difc.com/whats-on/events';
+
+// Skip non-professional lifestyle events
+const SKIP_PATTERNS = [
+  /pop.?up/i, /sculpture/i, /roofline/i, /art\s+exhibition/i,
+  /brunch/i, /dine/i, /dining/i, /dessert/i, /chocolate/i,
+  /fashion\s+show/i, /yoga/i, /fitness/i, /run\s+club/i,
+];
 
 class DifcScraper extends BaseScraper {
   constructor() {
@@ -78,7 +86,18 @@ class DifcScraper extends BaseScraper {
 
     logger.info(this.name, `Got ${events.length} events from card wrappers`);
 
-    return events.map(ev => ({
+    // Filter out non-professional lifestyle events
+    const professional = events.filter(ev => {
+      if (SKIP_PATTERNS.some(p => p.test(ev.title))) {
+        logger.info(this.name, `Skipping non-professional: ${ev.title}`);
+        return false;
+      }
+      return true;
+    });
+
+    logger.info(this.name, `${professional.length} professional events (${events.length - professional.length} skipped)`);
+
+    return professional.map(ev => ({
       title: ev.title,
       description: '',
       start_date: ev.dateText,
@@ -87,7 +106,7 @@ class DifcScraper extends BaseScraper {
       venue_address: 'DIFC, Sheikh Zayed Road, Dubai',
       city: 'Dubai',
       organizer: 'DIFC',
-      industry: 'Finance',
+      industry: classifyIndustry(ev.title, 'Finance'),
       is_free: false,
       registration_url: ev.href,
       image_url: ev.img,
