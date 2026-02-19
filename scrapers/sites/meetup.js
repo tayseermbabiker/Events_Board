@@ -8,6 +8,17 @@ const SEARCH_URLS = [
 ];
 const MAX_SCROLLS = 10;
 
+// Skip non-professional / social / lifestyle meetups
+const SKIP_PATTERNS = [
+  /eseek/i, /weekend adventure/i, /hiking/i, /desert safari/i,
+  /yoga/i, /fitness/i, /run\s+club/i, /book\s+club/i,
+  /dating/i, /singles/i, /speed\s+dating/i,
+  /language\s+exchange/i, /language\s+practice/i,
+  /board\s+game/i, /trivia/i, /karaoke/i, /potluck/i,
+  /brunch/i, /cocktail\s+party/i, /happy\s+hour/i,
+  /travel\s+experience/i, /photo\s+walk/i,
+];
+
 class MeetupScraper extends BaseScraper {
   constructor() {
     super('Meetup');
@@ -65,10 +76,15 @@ class MeetupScraper extends BaseScraper {
 
       // Deduplicate across cities, drop non-professional events
       for (const ev of events) {
-        if (!seen.has(ev.source_event_id) && ev.industry !== 'General') {
-          seen.add(ev.source_event_id);
-          allEvents.push(ev);
+        if (seen.has(ev.source_event_id)) continue;
+        if (ev.industry === 'General') continue;
+        const textToCheck = `${ev.title} ${ev.organizer || ''}`;
+        if (SKIP_PATTERNS.some(p => p.test(textToCheck))) {
+          logger.info(this.name, `Skipping non-professional: ${ev.title}`);
+          continue;
         }
+        seen.add(ev.source_event_id);
+        allEvents.push(ev);
       }
 
       logger.info(this.name, `${city} done: ${events.length} found, ${allEvents.length} total unique`);
