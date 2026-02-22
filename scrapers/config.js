@@ -16,9 +16,13 @@ module.exports = {
     eventbrite: { enabled: true },
     difc:      { enabled: true },
     adgm:      { enabled: true },
-    meetup:    { enabled: true },
+    meetup:    { enabled: false },
     dwtc:      { enabled: true },
     adnec:     { enabled: true },
+    terrapinn: { enabled: true },
+    informa:   { enabled: true },
+    dmg:       { enabled: true },
+    expocity:  { enabled: true },
   },
 
   validCities: [

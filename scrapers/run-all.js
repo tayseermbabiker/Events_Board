@@ -8,6 +8,10 @@ const AdgmScraper = require('./sites/adgm');
 const MeetupScraper = require('./sites/meetup');
 const DwtcScraper = require('./sites/dwtc');
 const AdnecScraper = require('./sites/adnec');
+const TerrapinnScraper = require('./sites/terrapinn');
+const InformaScraper = require('./sites/informa');
+const DmgScraper = require('./sites/dmg');
+const ExpocityScraper = require('./sites/expocity');
 
 const ALL_SCRAPERS = [
   { key: 'eventbrite', Cls: EventbriteScraper },
@@ -16,6 +20,10 @@ const ALL_SCRAPERS = [
   { key: 'difc',       Cls: DifcScraper },
   { key: 'adgm',       Cls: AdgmScraper },
   { key: 'meetup',     Cls: MeetupScraper },
+  { key: 'terrapinn', Cls: TerrapinnScraper },
+  { key: 'informa',   Cls: InformaScraper },
+  { key: 'dmg',       Cls: DmgScraper },
+  { key: 'expocity',  Cls: ExpocityScraper },
 ];
 
 async function postBatch(events) {
