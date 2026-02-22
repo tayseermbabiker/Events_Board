@@ -178,7 +178,7 @@ exports.handler = async (event) => {
           sundayStr,
         );
 
-        const subject = `This Week's Events — ${formatDate(mondayStr)} to ${formatDate(sundayStr)}`;
+        const subject = `This Week's UAE Events — ${formatDate(mondayStr)} to ${formatDate(sundayStr)}`;
 
         await resend.emails.send({
           from: 'Conferix UAE <alerts@conferix.com>',
