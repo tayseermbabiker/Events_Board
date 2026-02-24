@@ -361,19 +361,6 @@ body {
   z-index: 2;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-.cost-badge {
-  position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
-  background: var(--gold);
-  color: var(--navy-dark);
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  font-weight: 700;
-  z-index: 2;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
 .event-card { display: flex; flex-direction: column; }
 .event-card-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
 .event-card-content .view-details-hint { margin-top: auto; }

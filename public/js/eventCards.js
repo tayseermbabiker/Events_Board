@@ -44,12 +44,6 @@ function createEventCard(event) {
     imageWrapper.appendChild(categoryBadge);
   }
 
-  // Cost badge (top-right)
-  const costBadge = document.createElement('span');
-  costBadge.className = 'cost-badge';
-  costBadge.textContent = event.is_free ? 'FREE' : 'PAID';
-  imageWrapper.appendChild(costBadge);
-
   card.appendChild(imageWrapper);
 
   // Card content

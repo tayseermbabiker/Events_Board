@@ -4,16 +4,12 @@ let allEvents = [];
 let activeFilters = {
   month: '',
   industries: [],
-  cost: '',
   cities: []
 };
 
 function initializeFilters() {
   // Month filter (custom single-select dropdown)
   setupSingleSelect('month', 'month', 'All Months', getNext6Months());
-
-  // Cost filter (custom single-select dropdown)
-  setupSingleSelect('cost', 'cost', 'All Costs');
 
   // Industry multi-select
   setupMultiSelect('industry', 'industries', 'All Industries');
@@ -113,13 +109,6 @@ function applyFilters() {
   if (activeFilters.industries.length > 0) {
     filtered = filtered.filter(e => activeFilters.industries.includes(e.industry));
   }
-  if (activeFilters.cost) {
-    filtered = filtered.filter(e => {
-      if (activeFilters.cost === 'free') return e.is_free === true;
-      if (activeFilters.cost === 'paid') return e.is_free === false;
-      return true;
-    });
-  }
   if (activeFilters.cities.length > 0) {
     filtered = filtered.filter(e => activeFilters.cities.includes(e.city));
   }
@@ -129,7 +118,7 @@ function applyFilters() {
 }
 
 function clearFilters() {
-  activeFilters = { month: '', industries: [], cost: '', cities: [] };
+  activeFilters = { month: '', industries: [], cities: [] };
 
   // Reset single-select radios
   document.querySelectorAll('.single-select input[type="radio"][value=""]').forEach(r => r.checked = true);
@@ -139,11 +128,9 @@ function clearFilters() {
 
   // Reset button labels
   const monthBtn = document.getElementById('month-btn');
-  const costBtn = document.getElementById('cost-btn');
   const industryBtn = document.getElementById('industry-btn');
   const cityBtn = document.getElementById('city-btn');
   if (monthBtn) monthBtn.textContent = 'All Months ▾';
-  if (costBtn) costBtn.textContent = 'All Costs ▾';
   if (industryBtn) industryBtn.textContent = 'All Industries ▾';
   if (cityBtn) cityBtn.textContent = 'All Emirates ▾';
 
@@ -155,7 +142,7 @@ function updateClearButtonVisibility() {
   const clearBtn = document.getElementById('clear-filters');
   if (!clearBtn) return;
 
-  const hasFilters = activeFilters.month || activeFilters.industries.length > 0 || activeFilters.cost || activeFilters.cities.length > 0;
+  const hasFilters = activeFilters.month || activeFilters.industries.length > 0 || activeFilters.cities.length > 0;
   clearBtn.style.display = hasFilters ? 'inline-block' : 'none';
 }
 
@@ -169,7 +156,6 @@ function getFilterQueryString() {
   const params = new URLSearchParams();
   if (activeFilters.month) params.append('month', activeFilters.month);
   if (activeFilters.industries.length > 0) params.append('industries', activeFilters.industries.join(','));
-  if (activeFilters.cost) params.append('cost', activeFilters.cost);
   if (activeFilters.cities.length > 0) params.append('cities', activeFilters.cities.join(','));
   return params.toString();
 }
