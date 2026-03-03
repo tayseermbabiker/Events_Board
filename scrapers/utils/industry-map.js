@@ -6,8 +6,8 @@ const KEYWORDS = {
   'Real Estate':  ['real estate', 'property', 'construction', 'architecture', 'building show', 'housing', 'ciob', 'infrastructure', ' ibs '],
   Energy:         ['energy', 'oil', 'gas', 'solar', 'renewable', 'petroleum', 'power', 'utilities', 'electric vehicle', 'ecomobility', 'hydrogen', 'nuclear'],
   Education:      ['education', 'university', 'school', 'training', 'academic', 'edtech', 'book fair', 'literacy', 'scholarship'],
-  Marketing:      ['marketing', 'advertising', 'brand', 'social media', 'seo', 'public relations', 'communications'],
-  Legal:          ['legal', 'law ', 'compliance', 'regulation', 'governance', 'attorney', 'crime prevention', 'criminal justice', 'judiciary'],
+  Marketing:      ['marketing', 'advertising', 'brand strategy', 'branding', 'social media', 'seo', 'content marketing', 'content strategy', 'public relations', 'communications', 'growth marketing'],
+  Legal:          ['legal', 'law ', 'compliance', 'regulation', 'governance', 'attorney', 'crime prevention', 'criminal justice', 'judiciary', 'entity structure', 'business entity'],
   HR:             ['human resources', ' hr ', 'recruitment', 'talent', 'workforce', 'employee', 'hiring'],
   Logistics:      ['logistics', 'supply chain', 'shipping', 'freight', 'transport', 'warehouse', 'intralogist', 'packaging', 'manufacturing'],
   Hospitality:    ['hospitality', 'hotel', 'tourism', 'travel', 'food', 'restaurant', 'f&b', 'catering', 'theme park', 'iaapa', 'leisure', 'attractions'],
@@ -15,7 +15,7 @@ const KEYWORDS = {
   Media:          ['media', 'film', 'broadcast', 'publishing', 'journalism', 'entertainment', 'gaming', 'comic con'],
   Government:     ['government', 'public sector', 'policy', 'civic', 'municipality', 'federal', 'united nations', 'national resilience', 'security', 'defence', 'defense', 'military'],
   Sustainability: ['sustainability', 'esg', 'green', 'climate', 'carbon', 'environment', 'circular economy', 'net zero', 'clean energy'],
-  Startup:        ['startup', 'start-up', 'venture', 'entrepreneurship', 'incubator', 'accelerator', 'founder', 'b2b networking', 'business networking'],
+  Startup:        ['startup', 'start-up', 'venture', 'entrepreneurship', 'incubator', 'accelerator', 'founder', 'b2b networking', 'business networking', 'business setup', 'business formation', 'incorporation', 'llc', 'small business'],
 };
 
 /**
