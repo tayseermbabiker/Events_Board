@@ -10,6 +10,8 @@ const SKIP_PATTERNS = [
   /pop.?up/i, /sculpture/i, /roofline/i, /art\s+exhibition/i,
   /brunch/i, /dine/i, /dining/i, /dessert/i, /chocolate/i,
   /fashion\s+show/i, /yoga/i, /fitness/i, /run\s+club/i,
+  /game\s*night/i, /trivia/i, /karaoke/i, /open\s+mic/i,
+  /comedy/i, /paint/i, /movie\s+night/i, /book\s+club/i,
 ];
 
 class DifcScraper extends BaseScraper {

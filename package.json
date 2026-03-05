@@ -7,7 +7,8 @@
     "dev": "netlify dev",
     "build": "echo 'No build step required - static site'",
     "deploy": "netlify deploy --prod",
-    "scrape": "node scrapers/run-all.js"
+    "scrape": "node scrapers/run-all.js",
+    "early-birds": "node scripts/early-bird-alert.js"
   },
   "keywords": [
     "events",
