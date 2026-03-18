@@ -3,6 +3,30 @@ const config = require('./config');
 const logger = require('./utils/logger');
 const { parseDate } = require('./utils/date-parser');
 
+// Global blocklist — casual/social events that dilute the professional brand
+const SKIP_PATTERNS = [
+  /\bhappy hour\b/i, /\bnetworking mixer\b/i, /\bcocktail\b/i, /\bwine down\b/i,
+  /\bopen mic\b/i, /\bkaraoke\b/i, /\bpub quiz\b/i, /\bbar crawl\b/i,
+  /\bspeed dating\b/i, /\bdating\b/i, /\bsingles\b/i,
+  /\byoga\b/i, /\bpilates\b/i, /\bzumba\b/i, /\bmeditation retreat\b/i,
+  /\bbrunch\b/i, /\bfood tour\b/i, /\bcooking class\b/i,
+  /\bbook club\b/i, /\bpaint\s*(and|&|n)\s*sip\b/i,
+  /\bboat\s*(party|cruise)\b/i, /\bparty\b/i, /\bnight\s*out\b/i,
+  /\bkids\b/i, /\bchildren\b/i, /\bfamily fun\b/i,
+  /\bdog show\b/i, /\bcat show\b/i, /\bpet expo\b/i,
+  /\bcomic con\b/i, /\banime\b/i, /\bcosplay\b/i,
+  /\bwedding\b/i, /\bbridal\b/i,
+  /\bflea market\b/i, /\bantique\b/i, /\bcraft fair\b/i,
+  /\bconcert\b/i, /\bmusic fest\b/i,
+  /\btattoo\b/i, /\bfitness\b/i,
+  /\bpoker\b/i, /\bgolf\s*(tournament|outing|classic)\b/i, /\bgo-?kart/i,
+  /\bbowling\b/i, /\btrivia\b/i, /\bwine\s*tasting\b/i, /\bbeer\s*tasting\b/i,
+  /\bgala\b/i, /\bawards\s*dinner\b/i, /\bholiday\s*party\b/i,
+  /\bpadel\b/i, /\beuchre\b/i, /\bcasino\s*night\b/i,
+  /\bart\s*night\b/i, /\bcall\s*for\s*artists\b/i, /\bgalleries\b/i,
+  /\bdesert safari\b/i, /\bcity tour\b/i,
+];
+
 class BaseScraper {
   constructor(name) {
     this.name = name;
@@ -46,6 +70,12 @@ class BaseScraper {
   validate(evt) {
     if (!evt.title || !evt.source || !evt.source_event_id) {
       logger.warn(this.name, `Skipping event missing required fields: ${evt.title || '(no title)'}`);
+      return null;
+    }
+
+    // Global casual/social event filter
+    if (SKIP_PATTERNS.some(p => p.test(evt.title))) {
+      logger.info(this.name, `Skipping casual event: ${evt.title}`);
       return null;
     }
 
