@@ -13,7 +13,7 @@ module.exports = {
   },
 
   scrapers: {
-    eventbrite: { enabled: true },
+    eventbrite: { enabled: false },
     difc:      { enabled: true },
     adgm:      { enabled: true },
     meetup:    { enabled: false },
