@@ -13,10 +13,10 @@
   --gold: #D4A853;
 
   /* Neutral Colors */
-  --beige: #1A2235;
-  --grey-light: #0D1520;
-  --grey-medium: #1C2A3A;
-  --grey-dark: #94A3B8;
+  --beige: #EFE6DE;
+  --grey-light: #F8FAFC;
+  --grey-medium: #E2E8F0;
+  --grey-dark: #475569;
   --white: #FFFFFF;
 
   /* Semantic Colors */
@@ -25,15 +25,9 @@
   --warning: #FF991F;
 
   /* Text Colors */
-  --text-primary: #E2E8F0;
-  --text-secondary: #94A3B8;
+  --text-primary: #1E2A38;
+  --text-secondary: #4A4A4A;
   --text-light: #FFFFFF;
-
-  /* Glass Effect */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-hover-border: rgba(212, 168, 83, 0.4);
-  --glass-hover-glow: 0 0 20px rgba(212, 168, 83, 0.15);
 
   /* Typography */
   --font-serif: 'DM Serif Display', Georgia, serif;
