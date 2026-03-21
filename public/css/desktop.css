@@ -48,7 +48,8 @@
   .events-grid { grid-template-columns: repeat(3, 1fr); gap: 28px; }
   .event-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(11,20,38,0.15), 0 8px 16px rgba(30,58,95,0.1);
+    border-color: var(--glass-hover-border);
+    box-shadow: var(--glass-hover-glow), 0 20px 40px rgba(0,0,0,0.3);
   }
   .btn-primary:hover {
     background: var(--charcoal);
@@ -57,7 +58,7 @@
   }
   .filter-chip:hover {
     border-color: var(--primary-teal);
-    background: rgba(255,255,255,1);
+    background: rgba(45,212,191,0.1);
     box-shadow: 0 4px 12px rgba(45,212,191,0.15);
     transform: translateY(-2px);
   }
