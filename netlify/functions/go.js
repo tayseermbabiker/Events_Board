@@ -88,7 +88,7 @@ function buildEventPage(ev, related) {
     "offers": {
       "@type": "Offer",
       "price": "${ev.is_free ? '0' : ''}",
-      "priceCurrency": "USD",
+      "priceCurrency": "AED",
       "availability": "https://schema.org/InStock",
       "validFrom": "${ev.start_date || ''}"${regUrl ? `,\n      "url": "${regUrl}"` : ''}
     },
