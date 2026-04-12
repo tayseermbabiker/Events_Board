@@ -185,7 +185,7 @@ exports.handler = async (event) => {
 
     // Fetch related events (same city or industry, upcoming, max 5)
     const relatedRecords = await base('Events').select({
-      filterByFormula: `AND({start_date} >= "${today}", RECORD_ID() != "${id}", OR({city} = "${ev.city}", {industry} = "${ev.industry}"))`,
+      filterByFormula: `AND({is_active} = TRUE(), {start_date} >= "${today}", RECORD_ID() != "${id}", OR({city} = "${ev.city}", {industry} = "${ev.industry}"))`,
       sort: [{ field: 'start_date', direction: 'asc' }],
       maxRecords: 5,
     }).all();

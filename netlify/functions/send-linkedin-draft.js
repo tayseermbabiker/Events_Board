@@ -29,7 +29,7 @@ exports.handler = async (event) => {
     const nextWeekStr = nextWeek.toISOString().split('T')[0];
 
     const records = await base('Events').select({
-      filterByFormula: `AND({start_date} >= "${todayStr}", {start_date} <= "${nextWeekStr}")`,
+      filterByFormula: `AND({is_active} = TRUE(), {start_date} >= "${todayStr}", {start_date} <= "${nextWeekStr}")`,
       sort: [{ field: 'start_date', direction: 'asc' }],
     }).all();
 

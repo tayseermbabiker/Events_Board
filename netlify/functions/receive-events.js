@@ -25,8 +25,11 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Parse incoming events from n8n
-    const incomingEvents = JSON.parse(event.body);
+    // Accept either legacy array payload or new { source, events } object
+    const parsed = JSON.parse(event.body);
+    const isBatchPayload = parsed && !Array.isArray(parsed) && Array.isArray(parsed.events);
+    const incomingEvents = isBatchPayload ? parsed.events : parsed;
+    const batchSource = isBatchPayload ? parsed.source : null;
 
     if (!Array.isArray(incomingEvents) || incomingEvents.length === 0) {
       return {
@@ -109,7 +112,8 @@ exports.handler = async (event, context) => {
           image_url: eventData.image_url,
           source: eventData.source,
           source_event_id: eventData.source_event_id,
-          scraped_at: toDate(new Date().toISOString())
+          scraped_at: toDate(new Date().toISOString()),
+          is_active: true
         };
 
         if (existingRecords.length > 0) {
@@ -131,13 +135,39 @@ exports.handler = async (event, context) => {
       }
     }
 
+    // Withdrawal sweep: if this batch is scoped to one source and returned
+    // enough events to trust, deactivate any rows from that source whose
+    // source_event_id wasn't in this scrape.
+    const MIN_EVENTS_FOR_SWEEP = 3;
+    results.deactivated = 0;
+    if (batchSource && incomingEvents.length >= MIN_EVENTS_FOR_SWEEP) {
+      const seenIds = new Set(
+        incomingEvents.map(e => e.source_event_id).filter(Boolean)
+      );
+      const existingForSource = await eventsTable
+        .select({
+          filterByFormula: `AND({source} = "${batchSource}", {is_active} = TRUE())`,
+          fields: ['source_event_id']
+        })
+        .all();
+
+      const toDeactivate = existingForSource
+        .filter(r => !seenIds.has(r.get('source_event_id')))
+        .map(r => ({ id: r.id, fields: { is_active: false } }));
+
+      for (let i = 0; i < toDeactivate.length; i += 10) {
+        await eventsTable.update(toDeactivate.slice(i, i + 10));
+      }
+      results.deactivated = toDeactivate.length;
+    }
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
         results: results,
-        message: `Processed ${incomingEvents.length} events: ${results.created} created, ${results.updated} updated`
+        message: `Processed ${incomingEvents.length} events: ${results.created} created, ${results.updated} updated, ${results.deactivated} deactivated`
       })
     };
 

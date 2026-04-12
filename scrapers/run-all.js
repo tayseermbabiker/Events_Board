@@ -14,26 +14,26 @@ const DmgScraper = require('./sites/dmg');
 const ExpocityScraper = require('./sites/expocity');
 
 const ALL_SCRAPERS = [
-  { key: 'eventbrite', Cls: EventbriteScraper },
-  { key: 'dwtc',       Cls: DwtcScraper },
-  { key: 'adnec',      Cls: AdnecScraper },
-  { key: 'difc',       Cls: DifcScraper },
-  { key: 'adgm',       Cls: AdgmScraper },
-  { key: 'meetup',     Cls: MeetupScraper },
-  { key: 'terrapinn', Cls: TerrapinnScraper },
-  { key: 'informa',   Cls: InformaScraper },
-  { key: 'dmg',       Cls: DmgScraper },
-  { key: 'expocity',  Cls: ExpocityScraper },
+  { key: 'eventbrite', source: 'Eventbrite', Cls: EventbriteScraper },
+  { key: 'dwtc',       source: 'DWTC',       Cls: DwtcScraper },
+  { key: 'adnec',      source: 'ADNEC',      Cls: AdnecScraper },
+  { key: 'difc',       source: 'DIFC',       Cls: DifcScraper },
+  { key: 'adgm',       source: 'ADGM',       Cls: AdgmScraper },
+  { key: 'meetup',     source: 'Meetup',     Cls: MeetupScraper },
+  { key: 'terrapinn',  source: 'Terrapinn',  Cls: TerrapinnScraper },
+  { key: 'informa',    source: 'Informa',    Cls: InformaScraper },
+  { key: 'dmg',        source: 'DMG',        Cls: DmgScraper },
+  { key: 'expocity',   source: 'ExpoCity',   Cls: ExpocityScraper },
 ];
 
-async function postBatch(events) {
+async function postBatch(payload) {
   const url = config.webhookUrl;
-  logger.info('Runner', `POSTing batch of ${events.length} events to ${url}`);
+  logger.info('Runner', `POSTing ${payload.events.length} ${payload.source} events to ${url}`);
 
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(events),
+    body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
@@ -54,11 +54,13 @@ async function main() {
   const startTime = Date.now();
   logger.info('Runner', '=== Scrape run started ===');
 
-  const allEvents = [];
   const summary = {};
+  let totalPosted = 0;
+  let totalErrors = 0;
 
-  // Run scrapers sequentially to keep memory under control
-  for (const { key, Cls } of ALL_SCRAPERS) {
+  // Run scrapers sequentially, POST per source so the webhook
+  // can deactivate events that disappeared from each source.
+  for (const { key, source, Cls } of ALL_SCRAPERS) {
     if (!config.scrapers[key]?.enabled) {
       logger.info('Runner', `Skipping ${key} (disabled)`);
       summary[key] = { status: 'skipped', count: 0 };
@@ -70,42 +72,22 @@ async function main() {
     const events = await scraper.run();
 
     summary[key] = { status: events.length > 0 ? 'ok' : 'empty', count: events.length };
-    allEvents.push(...events);
 
-    // Brief pause between scrapers
+    if (events.length > 0) {
+      try {
+        await postBatch({ source, events });
+        totalPosted += events.length;
+        logger.info('Runner', `${key}: posted ${events.length} events`);
+      } catch (err) {
+        logger.error('Runner', `${key}: POST failed: ${err.message}`);
+        totalErrors += events.length;
+      }
+    }
+
     await sleep(1000);
   }
 
-  logger.info('Runner', `Total events collected: ${allEvents.length}`);
-
-  if (allEvents.length === 0) {
-    logger.warn('Runner', 'No events scraped — nothing to POST');
-    printSummary(summary, startTime);
-    return;
-  }
-
-  // POST in batches
-  const batchSize = config.batch.size;
-  let posted = 0;
-  let errors = 0;
-
-  for (let i = 0; i < allEvents.length; i += batchSize) {
-    const batch = allEvents.slice(i, i + batchSize);
-    try {
-      await postBatch(batch);
-      posted += batch.length;
-    } catch (err) {
-      logger.error('Runner', `Batch POST failed: ${err.message}`);
-      errors += batch.length;
-    }
-
-    // Delay between batches to avoid rate limits
-    if (i + batchSize < allEvents.length) {
-      await sleep(config.batch.delayMs);
-    }
-  }
-
-  logger.info('Runner', `Posted: ${posted}, Errors: ${errors}`);
+  logger.info('Runner', `Total posted: ${totalPosted}, Errors: ${totalErrors}`);
   printSummary(summary, startTime);
 }
 

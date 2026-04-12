@@ -14,7 +14,7 @@ exports.handler = async (event, context) => {
     const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY })
       .base(process.env.AIRTABLE_BASE_ID);
 
-    const filterFormula = 'OR(AND({status} = "Active", IS_AFTER({start_date}, NOW())), AND({status} = "Ongoing", IS_AFTER({end_date}, NOW())))';
+    const filterFormula = 'AND({is_active} = TRUE(), OR(AND({status} = "Active", IS_AFTER({start_date}, NOW())), AND({status} = "Ongoing", IS_AFTER({end_date}, NOW()))))';
 
     const records = await base('Events')
       .select({

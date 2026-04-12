@@ -136,7 +136,7 @@ exports.handler = async (event) => {
     const sundayStr = sunday.toISOString().split('T')[0];
 
     const allEvents = await EVENTS.select({
-      filterByFormula: `AND({start_date} >= "${mondayStr}", {start_date} <= "${sundayStr}")`,
+      filterByFormula: `AND({is_active} = TRUE(), {start_date} >= "${mondayStr}", {start_date} <= "${sundayStr}")`,
       sort: [{ field: 'start_date', direction: 'asc' }],
     }).all();
 
@@ -170,7 +170,7 @@ exports.handler = async (event) => {
     const plus14Str = plus14.toISOString().split('T')[0];
 
     const allEarlyBird = await EVENTS.select({
-      filterByFormula: `AND({early_bird_deadline} >= "${todayStr}", {early_bird_deadline} <= "${plus14Str}", {start_date} > "${sundayStr}")`,
+      filterByFormula: `AND({is_active} = TRUE(), {early_bird_deadline} >= "${todayStr}", {early_bird_deadline} <= "${plus14Str}", {start_date} > "${sundayStr}")`,
       sort: [{ field: 'early_bird_deadline', direction: 'asc' }],
     }).all();
 
