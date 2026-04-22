@@ -7,7 +7,9 @@ const PAGE_URL = 'https://www.difc.com/whats-on/events';
 
 // Skip non-professional lifestyle events
 const SKIP_PATTERNS = [
-  /pop.?up/i, /sculpture/i, /roofline/i, /art\s+exhibition/i,
+  /pop.?up/i, /sculpture/i, /roofline/i,
+  /art\s+exhibition/i, /art\s+night/i, /art\s+week/i, /art\s+fair/i,
+  /gallery/i, /concert/i, /\bgala\b/i,
   /brunch/i, /dine/i, /dining/i, /dessert/i, /chocolate/i,
   /fashion\s+show/i, /yoga/i, /fitness/i, /run\s+club/i,
   /game\s*night/i, /trivia/i, /karaoke/i, /open\s+mic/i,
