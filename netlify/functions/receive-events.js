@@ -1,102 +1,102 @@
-// Netlify Function: Receive Events from n8n Webhook
+// Netlify Function: Receive Events from scraper
+// Optimized to minimize Airtable API calls:
+//   - ONE bulk dedup list per batch (reused for the deactivate sweep)
+//   - BATCHED creates and updates (10 records per call)
+// Falls back to per-event lookups when payload has no source (legacy mode).
 const Airtable = require('airtable');
 
-exports.handler = async (event, context) => {
-  // CORS headers
+const INDUSTRY_MAP = {
+  'technology': 'Tech & AI',
+  'ai': 'Tech & AI',
+  'telecom': 'Tech & AI',
+  'telecommunications': 'Tech & AI',
+  'startup': 'Startups',
+  'real estate': 'Real Estate & Construction',
+  'construction': 'Real Estate & Construction',
+  'hospitality': 'Hospitality & F&B',
+  'food & beverage': 'Hospitality & F&B',
+  'retail': 'Hospitality & F&B',
+  'energy': 'Energy & Government',
+  'government': 'Energy & Government',
+  'agriculture': 'Energy & Government',
+  'marketing': 'General',
+  'education': 'General',
+  'media': 'General',
+  'manufacturing': 'General',
+  'transportation': 'General',
+};
+const KEEP_AS_IS = ['finance', 'legal', 'healthcare', 'startups', 'general',
+  'tech & ai', 'real estate & construction', 'hospitality & f&b', 'energy & government'];
+
+const mapIndustry = (raw) => {
+  if (!raw) return 'General';
+  const lower = raw.toLowerCase().trim();
+  if (KEEP_AS_IS.includes(lower)) return raw;
+  return INDUSTRY_MAP[lower] || 'General';
+};
+
+const toDate = (val) => (val ? val.split('T')[0] : null);
+
+exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
 
-  // Handle OPTIONS request for CORS
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
-
-  // Only allow POST requests
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   try {
-    // Accept either legacy array payload or new { source, events } object
     const parsed = JSON.parse(event.body);
     const isBatchPayload = parsed && !Array.isArray(parsed) && Array.isArray(parsed.events);
     const incomingEvents = isBatchPayload ? parsed.events : parsed;
     const batchSource = isBatchPayload ? parsed.source : null;
 
     if (!Array.isArray(incomingEvents) || incomingEvents.length === 0) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Invalid events data' })
-      };
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid events data' }) };
     }
 
-    // Initialize Airtable
     const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY })
       .base(process.env.AIRTABLE_BASE_ID);
-
     const eventsTable = base('Events');
 
-    // Process each event
-    const results = {
-      created: 0,
-      updated: 0,
-      skipped: 0,
-      errors: []
-    };
+    const results = { created: 0, updated: 0, skipped: 0, deactivated: 0, errors: [] };
+
+    // === Bulk dedup (when source is known) ===
+    // ONE list query → map of source_event_id → record id.
+    // Also build an active-only map, which the deactivate sweep reuses below
+    // (no second list call needed).
+    let existingMap = null;
+    let activeMap = null;
+
+    if (batchSource) {
+      const existing = await eventsTable
+        .select({
+          filterByFormula: `{source} = "${batchSource.replace(/"/g, '\\"')}"`,
+          fields: ['source_event_id', 'is_active'],
+        })
+        .all();
+      existingMap = new Map();
+      activeMap = new Map();
+      for (const rec of existing) {
+        const seid = rec.get('source_event_id');
+        if (!seid) continue;
+        existingMap.set(seid, rec.id);
+        if (rec.get('is_active')) activeMap.set(seid, rec.id);
+      }
+    }
+
+    // === Build create/update lists ===
+    const toCreate = [];
+    const toUpdate = [];
+    const today = toDate(new Date().toISOString());
 
     for (const eventData of incomingEvents) {
       try {
-        // Check if event already exists (by source_event_id)
-        const existingRecords = await eventsTable
-          .select({
-            filterByFormula: `{source_event_id} = "${eventData.source_event_id}"`,
-            maxRecords: 1
-          })
-          .firstPage();
-
-        // Strip time from dates — Airtable date fields reject ISO timestamps
-        const toDate = (val) => val ? val.split('T')[0] : null;
-
-        // Map granular scraper industries to consolidated categories
-        const INDUSTRY_MAP = {
-          'technology': 'Tech & AI',
-          'ai': 'Tech & AI',
-          'telecom': 'Tech & AI',
-          'telecommunications': 'Tech & AI',
-          'startup': 'Startups',
-          'real estate': 'Real Estate & Construction',
-          'construction': 'Real Estate & Construction',
-          'hospitality': 'Hospitality & F&B',
-          'food & beverage': 'Hospitality & F&B',
-          'retail': 'Hospitality & F&B',
-          'energy': 'Energy & Government',
-          'government': 'Energy & Government',
-          'agriculture': 'Energy & Government',
-          'marketing': 'General',
-          'education': 'General',
-          'media': 'General',
-          'manufacturing': 'General',
-          'transportation': 'General',
-        };
-        const KEEP_AS_IS = ['finance', 'legal', 'healthcare', 'startups', 'general',
-          'tech & ai', 'real estate & construction', 'hospitality & f&b', 'energy & government'];
-        const mapIndustry = (raw) => {
-          if (!raw) return 'General';
-          const lower = raw.toLowerCase().trim();
-          if (KEEP_AS_IS.includes(lower)) return raw;
-          return INDUSTRY_MAP[lower] || 'General';
-        };
-
-        // Prepare event record
         const eventRecord = {
           title: eventData.title,
           description: eventData.description,
@@ -112,51 +112,72 @@ exports.handler = async (event, context) => {
           image_url: eventData.image_url,
           source: eventData.source,
           source_event_id: eventData.source_event_id,
-          scraped_at: toDate(new Date().toISOString()),
-          is_active: true
+          scraped_at: today,
+          is_active: true,
         };
 
-        if (existingRecords.length > 0) {
-          // Update existing record
-          await eventsTable.update(existingRecords[0].id, eventRecord);
-          results.updated++;
+        let existingId = null;
+        if (existingMap) {
+          existingId = existingMap.get(eventData.source_event_id) || null;
         } else {
-          // Create new record
-          await eventsTable.create(eventRecord);
-          results.created++;
+          // Legacy fallback: per-event lookup when no batchSource
+          const records = await eventsTable
+            .select({
+              filterByFormula: `{source_event_id} = "${(eventData.source_event_id || '').replace(/"/g, '\\"')}"`,
+              maxRecords: 1,
+            })
+            .firstPage();
+          existingId = records.length > 0 ? records[0].id : null;
         }
 
+        if (existingId) {
+          toUpdate.push({ id: existingId, fields: eventRecord });
+        } else {
+          toCreate.push({ fields: eventRecord });
+        }
       } catch (err) {
         console.error('Error processing event:', err);
-        results.errors.push({
-          event: eventData.title,
-          error: err.message
-        });
+        results.errors.push({ event: eventData.title, error: err.message });
       }
     }
 
-    // Withdrawal sweep: if this batch is scoped to one source and returned
-    // enough events to trust, deactivate any rows from that source whose
-    // source_event_id wasn't in this scrape.
+    // === Batched writes (10 records per call) ===
+    for (let i = 0; i < toCreate.length; i += 10) {
+      try {
+        const created = await eventsTable.create(toCreate.slice(i, i + 10));
+        results.created += created.length;
+      } catch (err) {
+        console.error('Batched create failed:', err.message);
+        results.errors.push({ batch: 'create', error: err.message });
+      }
+    }
+    for (let i = 0; i < toUpdate.length; i += 10) {
+      try {
+        const updated = await eventsTable.update(toUpdate.slice(i, i + 10));
+        results.updated += updated.length;
+      } catch (err) {
+        console.error('Batched update failed:', err.message);
+        results.errors.push({ batch: 'update', error: err.message });
+      }
+    }
+
+    // === Deactivate sweep (reuses activeMap — no new list call) ===
     const MIN_EVENTS_FOR_SWEEP = 3;
-    results.deactivated = 0;
-    if (batchSource && incomingEvents.length >= MIN_EVENTS_FOR_SWEEP) {
-      const seenIds = new Set(
-        incomingEvents.map(e => e.source_event_id).filter(Boolean)
-      );
-      const existingForSource = await eventsTable
-        .select({
-          filterByFormula: `AND({source} = "${batchSource}", {is_active} = TRUE())`,
-          fields: ['source_event_id']
-        })
-        .all();
-
-      const toDeactivate = existingForSource
-        .filter(r => !seenIds.has(r.get('source_event_id')))
-        .map(r => ({ id: r.id, fields: { is_active: false } }));
-
+    if (activeMap && incomingEvents.length >= MIN_EVENTS_FOR_SWEEP) {
+      const seenIds = new Set(incomingEvents.map(e => e.source_event_id).filter(Boolean));
+      const toDeactivate = [];
+      for (const [seid, recId] of activeMap.entries()) {
+        if (!seenIds.has(seid)) {
+          toDeactivate.push({ id: recId, fields: { is_active: false } });
+        }
+      }
       for (let i = 0; i < toDeactivate.length; i += 10) {
-        await eventsTable.update(toDeactivate.slice(i, i + 10));
+        try {
+          await eventsTable.update(toDeactivate.slice(i, i + 10));
+        } catch (err) {
+          console.error('Batched deactivate failed:', err.message);
+          results.errors.push({ batch: 'deactivate', error: err.message });
+        }
       }
       results.deactivated = toDeactivate.length;
     }
@@ -166,22 +187,20 @@ exports.handler = async (event, context) => {
       headers,
       body: JSON.stringify({
         success: true,
-        results: results,
-        message: `Processed ${incomingEvents.length} events: ${results.created} created, ${results.updated} updated, ${results.deactivated} deactivated`
-      })
+        results,
+        message: `Processed ${incomingEvents.length} events: ${results.created} created, ${results.updated} updated, ${results.deactivated} deactivated`,
+      }),
     };
-
   } catch (error) {
     console.error('Receive events error:', error);
-
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
         success: false,
         error: 'Failed to receive events',
-        message: error.message
-      })
+        message: error.message,
+      }),
     };
   }
 };
