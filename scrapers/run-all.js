@@ -1,5 +1,6 @@
 const config = require('./config');
 const logger = require('./utils/logger');
+const pLimit = require('p-limit');
 
 // Import all scrapers
 const EventbriteScraper = require('./sites/eventbrite');
@@ -26,9 +27,11 @@ const ALL_SCRAPERS = [
   { key: 'expocity',   source: 'ExpoCity',   Cls: ExpocityScraper },
 ];
 
+const CONCURRENCY = 4;
+
 async function postBatch(payload) {
   const url = config.webhookUrl;
-  logger.info('Runner', `POSTing ${payload.events.length} ${payload.source} events to ${url}`);
+  logger.info('Runner', `POSTing ${payload.events.length} ${payload.source} events to webhook`);
 
   const res = await fetch(url, {
     method: 'POST',
@@ -42,52 +45,67 @@ async function postBatch(payload) {
   }
 
   const json = await res.json();
-  logger.info('Runner', `Response: ${json.message || JSON.stringify(json.results)}`);
+  logger.info('Runner', `${payload.source} response: ${json.message || JSON.stringify(json.results)}`);
   return json;
 }
 
-async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+// Scrape + POST a single source, isolated so a failure can't take down the run
+async function runSource({ key, source, Cls }) {
+  if (!config.scrapers[key]?.enabled) {
+    logger.info('Runner', `Skipping ${key} (disabled)`);
+    return { key, status: 'skipped', count: 0 };
+  }
+
+  logger.info('Runner', `--- ${key} START ---`);
+  try {
+    const scraper = new Cls();
+    const events = await scraper.run();
+
+    if (events.length === 0) {
+      logger.info('Runner', `${key}: no events scraped`);
+      return { key, status: 'empty', count: 0 };
+    }
+
+    await postBatch({ source, events });
+    logger.info('Runner', `--- ${key} DONE (${events.length} events) ---`);
+    return { key, status: 'ok', count: events.length };
+  } catch (err) {
+    logger.error('Runner', `${key} failed: ${err.message}`);
+    return { key, status: 'error', count: 0, error: err.message };
+  }
 }
 
 async function main() {
   const startTime = Date.now();
-  logger.info('Runner', '=== Scrape run started ===');
+  logger.info('Runner', `=== Scrape run started (concurrency=${CONCURRENCY}) ===`);
+
+  const limit = pLimit(CONCURRENCY);
+
+  // Run all sources in parallel (4 at a time). Promise.allSettled means one
+  // scraper crashing doesn't kill the others — each result is independent.
+  const settled = await Promise.allSettled(
+    ALL_SCRAPERS.map(s => limit(() => runSource(s)))
+  );
 
   const summary = {};
-  let totalPosted = 0;
-  let totalErrors = 0;
+  let totalEvents = 0;
+  let errorCount = 0;
 
-  // Run scrapers sequentially, POST per source so the webhook
-  // can deactivate events that disappeared from each source.
-  for (const { key, source, Cls } of ALL_SCRAPERS) {
-    if (!config.scrapers[key]?.enabled) {
-      logger.info('Runner', `Skipping ${key} (disabled)`);
-      summary[key] = { status: 'skipped', count: 0 };
-      continue;
+  for (const r of settled) {
+    if (r.status === 'fulfilled') {
+      const { key, status, count, error } = r.value;
+      summary[key] = { status, count, ...(error && { error }) };
+      totalEvents += count;
+      if (status === 'error') errorCount++;
+    } else {
+      // Should be unreachable since runSource catches its own errors,
+      // but defensive: record the rejection too.
+      logger.error('Runner', `Unexpected rejection: ${r.reason}`);
+      errorCount++;
     }
-
-    logger.info('Runner', `--- Running ${key} ---`);
-    const scraper = new Cls();
-    const events = await scraper.run();
-
-    summary[key] = { status: events.length > 0 ? 'ok' : 'empty', count: events.length };
-
-    if (events.length > 0) {
-      try {
-        await postBatch({ source, events });
-        totalPosted += events.length;
-        logger.info('Runner', `${key}: posted ${events.length} events`);
-      } catch (err) {
-        logger.error('Runner', `${key}: POST failed: ${err.message}`);
-        totalErrors += events.length;
-      }
-    }
-
-    await sleep(1000);
   }
 
-  logger.info('Runner', `Total posted: ${totalPosted}, Errors: ${totalErrors}`);
+  logger.info('Runner', `Total events posted: ${totalEvents}, Source errors: ${errorCount}`);
   printSummary(summary, startTime);
 }
 
@@ -95,7 +113,8 @@ function printSummary(summary, startTime) {
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   logger.info('Runner', '=== Summary ===');
   for (const [key, val] of Object.entries(summary)) {
-    logger.info('Runner', `  ${key}: ${val.status} (${val.count} events)`);
+    const suffix = val.error ? ` — ${val.error}` : '';
+    logger.info('Runner', `  ${key}: ${val.status} (${val.count} events)${suffix}`);
   }
   logger.info('Runner', `Total time: ${elapsed}s`);
   logger.info('Runner', '=== Scrape run complete ===');

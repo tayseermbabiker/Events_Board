@@ -2,8 +2,16 @@
 // Optimized to minimize Airtable API calls:
 //   - ONE bulk dedup list per batch (reused for the deactivate sweep)
 //   - BATCHED creates and updates (10 records per call)
+//   - LLM (Claude Haiku) reclassifies events that fall back to "General"
 // Falls back to per-event lookups when payload has no source (legacy mode).
 const Airtable = require('airtable');
+const Anthropic = require('@anthropic-ai/sdk');
+
+const VALID_CATEGORIES = [
+  'Finance', 'Legal', 'Healthcare', 'Startups', 'General',
+  'Tech & AI', 'Real Estate & Construction', 'Hospitality & F&B',
+  'Energy & Government',
+];
 
 const INDUSTRY_MAP = {
   'technology': 'Tech & AI',
@@ -36,6 +44,57 @@ const mapIndustry = (raw) => {
 };
 
 const toDate = (val) => (val ? val.split('T')[0] : null);
+
+// Reclassify events whose industry mapped to "General" by asking Haiku.
+// One batched call per webhook invocation — typically a few cents per year of scraping.
+async function reclassifyGenerals(records) {
+  const candidates = records.filter(r =>
+    r.fields.industry === 'General' &&
+    r.fields.title &&
+    (r.fields.title.length + (r.fields.description || '').length) > 20
+  );
+  if (candidates.length === 0) return;
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.log('ANTHROPIC_API_KEY not set — skipping LLM reclassification');
+    return;
+  }
+
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const list = candidates
+    .map((r, i) => `${i + 1}. ${r.fields.title} — ${(r.fields.description || '').slice(0, 250)}`)
+    .join('\n');
+
+  const prompt = `Classify each of these professional events into EXACTLY one of these categories:
+${VALID_CATEGORIES.join(', ')}
+
+Return ONLY a JSON array of category strings, in the same order as the input. No explanation, no prose.
+
+Events:
+${list}`;
+
+  try {
+    const resp = await client.messages.create({
+      model: 'claude-haiku-4-5',
+      max_tokens: 60 * candidates.length + 100,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    const text = resp.content[0].text.trim();
+    // Tolerate the model wrapping JSON in ```json fences
+    const cleaned = text.replace(/^```(?:json)?\s*|\s*```$/g, '');
+    const categories = JSON.parse(cleaned);
+    if (!Array.isArray(categories)) throw new Error('Expected array');
+
+    candidates.forEach((r, i) => {
+      const cat = categories[i];
+      if (cat && VALID_CATEGORIES.includes(cat)) {
+        r.fields.industry = cat;
+      }
+    });
+    console.log(`Reclassified ${candidates.length} events via Haiku`);
+  } catch (err) {
+    console.error('LLM reclassify failed (events stay as General):', err.message);
+  }
+}
 
 exports.handler = async (event) => {
   const headers = {
@@ -140,6 +199,10 @@ exports.handler = async (event) => {
         results.errors.push({ event: eventData.title, error: err.message });
       }
     }
+
+    // === LLM reclassification for "General" events ===
+    // Done in-memory before writes so the better category is what Airtable stores.
+    await reclassifyGenerals([...toCreate, ...toUpdate]);
 
     // === Batched writes (10 records per call) ===
     for (let i = 0; i < toCreate.length; i += 10) {
